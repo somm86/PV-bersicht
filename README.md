@@ -74,7 +74,7 @@ Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie räumlich
 
 Der größere Wallbox-Bereich zeigt die aktive Phasenanzahl und die verbleibende Ladezeit. Die bestätigten IDs sind **23503** für die Phasenanzahl (Integer 0, 1 oder 3) und **56785** für die Restladezeit. Sie sind als Vorgaben hinterlegt. In bestehenden Instanzen ggf. die IDs in **Aktive Ladephasen** und **Verbleibende Ladezeit** auswählen.
 
-Die Restladezeit wird mit `GetValueFormatted(56785)` direkt aus Symcon übernommen, einschließlich der vom Variablenprofil gelieferten Formatierung. Es gibt keine Umrechnung, Schätzung oder zusätzliche Einheit. Ohne Profil wird entsprechend der unveränderte Zahlenwert angezeigt; ohne Quelle „—“. Eine zuvor gespeicherte Einstellung zur Zeiteinheit wird nicht mehr verwendet. Phasen und Restzeit sind reine Statusanzeigen ohne Graph.
+Die Restladezeit wird mit `GetValueFormatted(56785)` direkt aus Symcon übernommen, einschließlich der vom Variablenprofil gelieferten Formatierung. Es gibt keine Umrechnung, Schätzung oder zusätzliche Einheit. Ohne Profil wird entsprechend der unveränderte Zahlenwert angezeigt; ohne Quelle „—“. Eine zuvor gespeicherte Einstellung zur Zeiteinheit wird nicht mehr verwendet. Phasen und Restzeit sind reine Statusanzeigen ohne Graph und werden nur bei einer Ladeleistung über 100 W angezeigt (entspricht über 0,1 kW am Wallbox-Rohwert). Bei genau 100 W, darunter oder bei fehlender Ladeleistung ist der gesamte Statusabschnitt inklusive Trennlinie verborgen.
 
 ## Archiv und Aktualisierung
 
@@ -91,7 +91,7 @@ npm ci
 npm test
 ```
 
-Siebzehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
+Achtzehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
 
 Optional mit lokal installiertem PHP und Chromium:
 

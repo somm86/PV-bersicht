@@ -185,3 +185,14 @@ test('remaining time preserves formatted values and raw integers without adding 
   dom.window.close();
  }
 });
+
+test('phase and remaining-time section is visible only above 100 W',()=>{
+ for(const [power,visible] of [[null,false],[0,false],[-500,false],[99,false],[100,false],[100.1,true],[11000,true]]) {
+  const dom=render({ev:{value:power},phases:{value:3},remaining:{value:90,display:'90'}}),d=dom.window.document;
+  assert.equal(d.querySelector('#chargingInfo').style.display!=='none',visible,String(power)+' W');
+  assert.ok(d.querySelector('#chargingInfo #evPhases'));
+  assert.ok(d.querySelector('#chargingInfo #evRemaining'));
+  assert.ok(d.querySelector('#evSession'));
+  dom.window.close();
+ }
+});
