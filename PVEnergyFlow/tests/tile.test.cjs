@@ -127,3 +127,17 @@ test('charge bars reflect SOC and clamp invalid percentages; missing details sta
   assert.equal(d.querySelectorAll('symbol').length,5);
   dom.window.close();
 });
+
+test('additional energy readings distinguish available energy, health and optional daily totals',()=>{
+  const dom=render({batteryAvailable:{id:44710,value:8.847,label:'Speicher verfügbar',unit:'kWh'},batteryCapacity:{id:20923,value:9.2,unit:'kWh'},batteryHealth:{id:47552,value:96,unit:'%'},pvToday:{id:0,value:null,unit:'kWh'},importToday:{id:12345,value:2.3,unit:'kWh',label:'Netzbezug heute',history:[],archive:false}}),d=dom.window.document;
+  const field=key=>d.querySelector('.reading[data-key="'+key+'"]');
+  assert.equal(field('batteryAvailable').querySelector('strong').textContent,'8,8 kWh');
+  assert.equal(field('batteryCapacity').querySelector('strong').textContent,'9,2 kWh');
+  assert.equal(field('batteryHealth').querySelector('strong').textContent,'96 %');
+  assert.equal(field('pvToday').hidden,true);
+  assert.equal(field('importToday').hidden,false);
+  field('importToday').click();
+  assert.match(d.querySelector('#title').textContent,/Netzbezug heute/);
+  assert.equal(field('evTotal').hidden,true);
+  dom.window.close();
+});

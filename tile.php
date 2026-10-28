@@ -15,6 +15,13 @@ $config = [
     'gridImport' => ['id' => 30181, 'factor' => 1, 'label' => 'Netzbezug gesamt', 'unit' => 'kWh'],
     'gridExport' => ['id' => 29267, 'factor' => 1, 'label' => 'Netzeinspeisung gesamt', 'unit' => 'kWh'],
     'evSession' => ['id' => 17564, 'factor' => 1, 'label' => 'Wallbox Ladezyklus', 'unit' => 'kWh'],
+    'batteryAvailable' => ['id' => 44710, 'factor' => 0.001, 'label' => 'Speicher verfügbar', 'unit' => 'kWh'],
+    'batteryCapacity' => ['id' => 20923, 'factor' => 0.001, 'label' => 'Speicherkapazität', 'unit' => 'kWh'],
+    'batteryHealth' => ['id' => 47552, 'factor' => 1, 'label' => 'Batteriezustand (SOH)', 'unit' => '%'],
+    'evTotal' => ['id' => 37027, 'factor' => 1, 'label' => 'Wallbox gesamt', 'unit' => 'kWh'],
+    'pvToday' => ['id' => 0, 'factor' => 1, 'label' => 'PV heute', 'unit' => 'kWh'],
+    'importToday' => ['id' => 0, 'factor' => 1, 'label' => 'Netzbezug heute', 'unit' => 'kWh'],
+    'exportToday' => ['id' => 0, 'factor' => 1, 'label' => 'Einspeisung heute', 'unit' => 'kWh'],
 ];
 // Die Modulinstanz kann IDs übergeben; der direkte Skriptbetrieb bleibt verfügbar.
 if (isset($pvTileContext)) {

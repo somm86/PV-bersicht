@@ -8,7 +8,7 @@ Voraussetzung: IP-Symcon ab 7.0. Dieses Repository enthält jetzt eine `library.
 
 1. In der Symcon-Modulverwaltung das Repository `https://github.com/somm86/PV-bersicht.git` hinzufügen bzw. den vorhandenen Eintrag aktualisieren. Als Branch **main** auswählen.
 2. Eine neue Instanz **PV Energiefluss** anlegen.
-3. In der Instanzkonfiguration die Leistungs- und Ladestandsvariablen auswählen. Die IDs aus den Screenshots sind voreingestellt. Zusätzlich können fünf Detailwerte zugeordnet werden (0 = nicht zugeordnet). PV, Speicher und Netz müssen W liefern; die Wallbox kW. Netz positiv = Bezug, Speicher positiv = Laden.
+3. In der Instanzkonfiguration die Leistungs- und Ladestandsvariablen auswählen. Die IDs aus den Screenshots sind voreingestellt. Zusätzlich können weitere Detailwerte zugeordnet werden (0 = nicht zugeordnet). PV, Speicher und Netz müssen W liefern; die Wallbox kW. Netz positiv = Bezug, Speicher positiv = Laden.
 4. Änderungen übernehmen. Unter der Instanz wird die HTMLBox-Variable **PV Energiefluss** erstellt und regelmäßig aktualisiert. Mit **Jetzt aktualisieren** lässt sie sich sofort erneuern.
 5. Für die native PHP/HTML-Kachel in der Kachel Visu die **Instanz „PV Energiefluss“ selbst** in die Visualisierung aufnehmen. Das Modul stellt die HTML-Ausgabe über `GetVisualizationTile()` bereit und aktualisiert sie über `UpdateVisualizationValue()`. Für IPSView bleibt alternativ die darunterliegende HTMLBox-Variable verfügbar. Es müssen keine Dateien manuell in das Skriptverzeichnis kopiert werden.
 
@@ -61,6 +61,11 @@ Der Name `PV-bersicht-main` aus dem ZIP und ein zusätzlicher verschachtelter Or
 | Netzbezug gesamt | 30181 | kWh laut Screenshot |
 | Netzeinspeisung gesamt | 29267 | kWh laut Screenshot |
 | Wallbox Ladezyklus | 17564 | kWh laut Screenshot |
+| Speicher verfügbar | 44710 | Wh → kWh (Faktor 0,001) |
+| Speicherkapazität | 20923 | Wh → kWh (Faktor 0,001) |
+| Batteriezustand (SOH) | 47552 | % |
+| Wallbox gesamt | 37027 | kWh |
+| PV / Netzbezug / Einspeisung heute | 0 | Optional: jeweilige Tagesvariable in kWh auswählen |
 
 **Die oben genannten Rohwerteinheiten sind vom Nutzer bestätigt:** PV, Speicher und Netz liefern Watt; die Wallbox liefert Kilowatt. Die voreingestellten Faktoren passen dazu. Bei einem späteren Wechsel der Quellen die Rohwerte erneut prüfen: Für W Faktor 1, für kW Faktor 1000 verwenden. Bei entgegengesetzter Zählrichtung den Faktor negieren. IDs lassen sich zentral am Anfang von `tile.php` ändern; nicht vorhandene Werte erscheinen als „—“.
 
@@ -68,7 +73,7 @@ Die PV-Quelle 22209 („mit Speicherberücksichtigung“) liefert laut Bestätig
 
 ## Darstellung
 
-Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie detaillierte, mehrschichtige SVG-Symbole für Solarmodule, Batterie, Haus, Strommast und Wallbox mit Fahrzeug sowie animierte Leitungen zeigen die Anlage. Die zentrale Hauskarte ist ohne umlaufende Kreise gestaltet und zeigt ein Haussymbol und den berechneten Leistungswert ohne Textbeschriftung; die Berechnung bleibt unverändert. Speicher- und Fahrzeugladestand erscheinen zusätzlich als Balken. PV-Gesamterzeugung, Speichertemperatur, Netzenergiezähler und Energie im Wallbox-Ladezyklus ergänzen die Leistungswerte. Es handelt sich bei den Gesamtwerten ausdrücklich nicht um Tageswerte. Detailwerte sind separat für den Archivverlauf anklickbar; nicht zugeordnete Werte erscheinen als „—“.
+Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie große, flächige und farbige SVG-Symbole für Solarmodule, Batterie, Haus, Strommast und Wallbox mit Fahrzeug sowie animierte Leitungen zeigen die Anlage. Die zentrale Hauskarte ist ohne umlaufende Kreise gestaltet und zeigt ein Haussymbol und den berechneten Leistungswert ohne Textbeschriftung; die Berechnung bleibt unverändert. Speicher- und Fahrzeugladestand erscheinen zusätzlich als Balken. PV-Gesamterzeugung, Speichertemperatur, Netzenergiezähler und Energie im Wallbox-Ladezyklus ergänzen die Leistungswerte. Eine zusätzliche Detailleiste zeigt verfügbare Speicherenergie, Speicherkapazität, Batteriezustand und den Wallbox-Gesamtzähler. Drei optionale Tageswerte (PV, Netzbezug, Einspeisung) werden erst sichtbar, wenn die jeweiligen kWh-Variablen in der Instanz gewählt sind. Die Screenshots zeigen dafür VerbrauchZeitspanne-Instanzen, aber keine sicher zuordenbaren Ergebnisvariablen; deshalb sind diese IDs mit 0 vorbelegt. Es handelt sich bei den Gesamtwerten ausdrücklich nicht um Tageswerte. Detailwerte sind separat für den Archivverlauf anklickbar; nicht zugeordnete Werte erscheinen als „—“.
 
 ## Archiv und Aktualisierung
 
@@ -85,7 +90,7 @@ npm ci
 npm test
 ```
 
-Dreizehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
+Vierzehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
 
 Optional mit lokal installiertem PHP und Chromium:
 

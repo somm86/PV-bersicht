@@ -64,6 +64,41 @@
       "caption": "Wallbox Ladezyklus (kWh)"
     },
     {
+      "type": "SelectVariable",
+      "name": "BatteryAvailableVariable",
+      "caption": "Speicher verfügbar (Quelle in Wh)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "BatteryCapacityVariable",
+      "caption": "Speicherkapazität (Quelle in Wh)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "BatteryHealthVariable",
+      "caption": "Batteriezustand (SOH) (Quelle in %)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "WallboxTotalVariable",
+      "caption": "Wallbox gesamt (Quelle in kWh)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "PVTodayVariable",
+      "caption": "PV heute (Quelle in kWh)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "GridImportTodayVariable",
+      "caption": "Netzbezug heute (Quelle in kWh)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "GridExportTodayVariable",
+      "caption": "Einspeisung heute (Quelle in kWh)"
+    },
+    {
       "type": "NumberSpinner",
       "name": "RefreshSeconds",
       "caption": "Aktualisierung in Sekunden (mindestens 10)",
