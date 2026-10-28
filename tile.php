@@ -10,16 +10,19 @@ $config = [
     'ev'      => ['id' => 31735, 'factor' => 1000, 'label' => 'Wallbox', 'unit' => 'W'],
     'soc'     => ['id' => 45769, 'factor' => 1, 'label' => 'Speicherstand', 'unit' => '%'],
     'car'     => ['id' => 48784, 'factor' => 1, 'label' => 'Fahrzeugakku', 'unit' => '%'],
-    'pvTotal' => ['id' => 54550, 'factor' => 1, 'label' => 'PV-Erzeugung gesamt', 'unit' => 'kWh', 'chart' => false],
-    'gridImport' => ['id' => 30181, 'factor' => 1, 'label' => 'Netzbezug gesamt', 'unit' => 'kWh', 'chart' => false],
-    'gridExport' => ['id' => 29267, 'factor' => 1, 'label' => 'Netzeinspeisung gesamt', 'unit' => 'kWh', 'chart' => false],
-    'evSession' => ['id' => 17564, 'factor' => 1, 'label' => 'Wallbox Ladezyklus', 'unit' => 'kWh', 'chart' => false],
-    'pvToday' => ['id' => 0, 'factor' => 1, 'label' => 'PV heute', 'unit' => 'kWh'],
-    'importToday' => ['id' => 0, 'factor' => 1, 'label' => 'Netzbezug heute', 'unit' => 'kWh'],
-    'exportToday' => ['id' => 0, 'factor' => 1, 'label' => 'Einspeisung heute', 'unit' => 'kWh'],
+    'pvTotal' => ['id' => 54550, 'factor' => 1, 'label' => 'PV-Erzeugung gesamt', 'unit' => 'kWh', 'kind' => 'counter'],
+    'gridImport' => ['id' => 30181, 'factor' => 1, 'label' => 'Netzbezug gesamt', 'unit' => 'kWh', 'kind' => 'counter'],
+    'gridExport' => ['id' => 29267, 'factor' => 1, 'label' => 'Netzeinspeisung gesamt', 'unit' => 'kWh', 'kind' => 'counter'],
+    'evSession' => ['id' => 17564, 'factor' => 1, 'label' => 'Wallbox Ladezyklus', 'unit' => 'kWh', 'kind' => 'counter'],
+    'pvToday' => ['id' => 0, 'factor' => 1, 'label' => 'PV heute', 'unit' => 'kWh', 'kind' => 'counter'],
+    'importToday' => ['id' => 0, 'factor' => 1, 'label' => 'Netzbezug heute', 'unit' => 'kWh', 'kind' => 'counter'],
+    'exportToday' => ['id' => 0, 'factor' => 1, 'label' => 'Einspeisung heute', 'unit' => 'kWh', 'kind' => 'counter'],
+    'phases' => ['id' => 0, 'factor' => 1, 'label' => 'Ladephasen', 'unit' => '', 'chart' => false],
+    'remaining' => ['id' => 0, 'factor' => 60, 'label' => 'Restladezeit', 'unit' => 's', 'chart' => false],
 ];
 // Die Modulinstanz kann IDs übergeben; der direkte Skriptbetrieb bleibt verfügbar.
 if (isset($pvTileContext)) {
+    $config['remaining']['factor'] = $pvTileContext['remainingFactor'] ?? 60;
     foreach ($pvTileContext['ids'] as $key => $id) {
         $config[$key]['id'] = $id;
     }
@@ -39,12 +42,19 @@ foreach ($config as $key => $item) {
             try {
                 $entry['archive'] = AC_GetLoggingStatus($archive, $item['id']);
                 if ($entry['archive']) {
-                    // Stundenmittel: begrenzte Datenmenge, auch bei hochfrequentem Logging.
-                    $rows = AC_GetAggregatedValues($archive, $item['id'], 0, $now - 86400, $now, 0);
-                    if (is_array($rows)) {
+                    if (($item['kind'] ?? '') === 'counter') {
+                        // Zählerstände niemals als Leistungs-/Verbrauchsmittel darstellen.
+                        // Begrenztes Rohwertfenster, bei Erreichen der Grenze explizit markieren.
+                        $rows = AC_GetLoggedValues($archive, $item['id'], $now - 86400, $now, 2000);
+                        if (!is_array($rows)) throw new RuntimeException('Archivdaten fehlen');
+                        $entry['limited'] = count($rows) >= 2000;
+                        foreach ($rows as $row) $entry['history'][] = ['t' => $row['TimeStamp'], 'v' => $row['Value'] * $item['factor']];
+                    } else {
+                        $rows = AC_GetAggregatedValues($archive, $item['id'], 0, $now - 86400, $now, 0);
+                        if (!is_array($rows)) throw new RuntimeException('Archivdaten fehlen');
                         foreach ($rows as $row) $entry['history'][] = ['t' => $row['TimeStamp'], 'v' => $row['Avg'] * $item['factor']];
-                        usort($entry['history'], static function ($a, $b) { return $a['t'] <=> $b['t']; });
                     }
+                    usort($entry['history'], static function ($a, $b) { return $a['t'] <=> $b['t']; });
                 }
             } catch (Throwable $e) { $entry['error'] = 'Archiv derzeit nicht lesbar'; }
         }

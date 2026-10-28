@@ -109,16 +109,23 @@ test('native tile callback updates its isolated frame',()=>{
   dom.window.close();
 });
 
-test('counters and session energy remain passive while power retains its graph',()=>{
-  const dom=render({pvTotal:{value:40377.7,label:'PV-Erzeugung gesamt',unit:'kWh',archive:true,history:[{t:1700000000,v:40377.7}]},gridImport:{value:46133.19,unit:'kWh'},gridExport:{value:23410.91,unit:'kWh'},evSession:{value:6.5,unit:'kWh'}}),d=dom.window.document;
+test('energy counters open their own raw counter graph rather than the power graph',()=>{
+  const counters={};
+  for(const key of ['pvTotal','gridImport','gridExport','evSession'])counters[key]={value:40377.7,label:key,unit:'kWh',kind:'counter',archive:true,history:[{t:1699996400,v:40375.2},{t:1700000000,v:40377.7}]};
+  const dom=render(counters),d=dom.window.document;
   assert.match(d.querySelector('#pvTotal').textContent,/Zählerstand · 40\.377,7 kWh/);
-  assert.match(d.querySelector('#gridImport').textContent,/46\.133,19 kWh/);
-  for(const id of ['pvTotal','gridImport','gridExport','evSession']) {
-    const metric=d.querySelector('#'+id);
+  for(const key of Object.keys(counters)) {
+    const metric=d.querySelector('#'+key);
     metric.dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+    assert.match(d.querySelector('#title').textContent,new RegExp('^'+key));
+    assert.match(d.querySelector('#message').textContent,/Archivierte Zählerstände/);
+    assert.match(d.querySelector('#message').textContent,/Zuwachs.*2,5 kWh/);
+    assert.equal(d.querySelectorAll('#chart circle').length,2);
+    assert.equal(metric.getAttribute('tabindex'),'0');
+    d.querySelector('#close').click();
     metric.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
-    assert.equal(d.querySelector('dialog').open,false,id+' must not open a graph');
-    assert.equal(metric.getAttribute('tabindex'),null);
+    assert.match(d.querySelector('#title').textContent,new RegExp('^'+key));
+    d.querySelector('#close').click();
   }
   d.querySelector('#ev .value').dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
   assert.equal(d.querySelector('dialog').open,true);
@@ -147,4 +154,26 @@ test('removed readings stay absent; configured daily values remain optional',()=
   const empty=render();
   assert.equal(empty.window.document.querySelector('.details').hidden,true);
   empty.window.close();
+});
+
+test('counter resets split the curve and bounded data is clearly marked',()=>{
+  const dom=render({evSession:{value:1.5,label:'Ladezyklus',unit:'kWh',kind:'counter',limited:true,archive:true,history:[{t:1699992800,v:6},{t:1699996400,v:0},{t:1700000000,v:1.5}]}}),d=dom.window.document;
+  d.querySelector('#evSession').dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+  assert.match(d.querySelector('#message').textContent,/Rücksetzung erkannt/);
+  assert.match(d.querySelector('#message').textContent,/2000 Archivwerte begrenzt/);
+  assert.doesNotMatch(d.querySelector('#message').textContent,/Zuwachs/);
+  assert.equal(d.querySelectorAll('#chart polyline').length,2);
+  dom.window.close();
+});
+test('wallbox shows source phases and duration without estimating missing values',()=>{
+  let dom=render({phases:{value:3},remaining:{value:5400}}),d=dom.window.document;
+  assert.equal(d.querySelector('#evPhases').textContent,'Ladephasen · 3-phasig');
+  assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · 1 h 30 min');
+  d.querySelector('#evRemaining').dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+  assert.equal(d.querySelector('dialog').open,false);
+  dom.window.close();
+  dom=render({phases:{value:7},remaining:{value:-1}});d=dom.window.document;
+  assert.equal(d.querySelector('#evPhases').textContent,'Ladephasen · —');
+  assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · —');
+  dom.window.close();
 });
