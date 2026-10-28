@@ -109,13 +109,19 @@ test('native tile callback updates its isolated frame',()=>{
   dom.window.close();
 });
 
-test('detail values use their units and open their own archive',()=>{
-  const dom=render({pvTotal:{value:40377.7,label:'PV-Erzeugung gesamt',unit:'kWh',archive:true,history:[{t:1700000000,v:40377.7}]},temperature:{value:27.9,label:'Speichertemperatur',unit:'°C',archive:false}}),d=dom.window.document;
-  assert.match(d.querySelector('#pvTotal').textContent,/40\.377,7 kWh/);
-  assert.match(d.querySelector('#temperature').textContent,/27,9 °C/);
-  d.querySelector('#pvTotal').dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
-  assert.equal(d.querySelector('#title').textContent,'PV-Erzeugung gesamt · letzte 24 Stunden (kWh)');
-  assert.equal(d.querySelectorAll('#chart circle').length,1);
+test('counters and session energy remain passive while power retains its graph',()=>{
+  const dom=render({pvTotal:{value:40377.7,label:'PV-Erzeugung gesamt',unit:'kWh',archive:true,history:[{t:1700000000,v:40377.7}]},gridImport:{value:46133.19,unit:'kWh'},gridExport:{value:23410.91,unit:'kWh'},evSession:{value:6.5,unit:'kWh'}}),d=dom.window.document;
+  assert.match(d.querySelector('#pvTotal').textContent,/Zählerstand · 40\.377,7 kWh/);
+  assert.match(d.querySelector('#gridImport').textContent,/46\.133,19 kWh/);
+  for(const id of ['pvTotal','gridImport','gridExport','evSession']) {
+    const metric=d.querySelector('#'+id);
+    metric.dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+    metric.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+    assert.equal(d.querySelector('dialog').open,false,id+' must not open a graph');
+    assert.equal(metric.getAttribute('tabindex'),null);
+  }
+  d.querySelector('#ev .value').dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+  assert.equal(d.querySelector('dialog').open,true);
   assert.equal(d.querySelector('#house').textContent.trim(),'2,5 kW');
   dom.window.close();
 });
@@ -128,16 +134,17 @@ test('charge bars reflect SOC and clamp invalid percentages; missing details sta
   dom.window.close();
 });
 
-test('additional energy readings distinguish available energy, health and optional daily totals',()=>{
-  const dom=render({batteryAvailable:{id:44710,value:8.847,label:'Speicher verfügbar',unit:'kWh'},batteryCapacity:{id:20923,value:9.2,unit:'kWh'},batteryHealth:{id:47552,value:96,unit:'%'},pvToday:{id:0,value:null,unit:'kWh'},importToday:{id:12345,value:2.3,unit:'kWh',label:'Netzbezug heute',history:[],archive:false}}),d=dom.window.document;
-  const field=key=>d.querySelector('.reading[data-key="'+key+'"]');
-  assert.equal(field('batteryAvailable').querySelector('strong').textContent,'8,8 kWh');
-  assert.equal(field('batteryCapacity').querySelector('strong').textContent,'9,2 kWh');
-  assert.equal(field('batteryHealth').querySelector('strong').textContent,'96 %');
-  assert.equal(field('pvToday').hidden,true);
-  assert.equal(field('importToday').hidden,false);
-  field('importToday').click();
+test('removed readings stay absent; configured daily values remain optional',()=>{
+  const dom=render({batteryAvailable:{id:44710,value:8.847,unit:'kWh'},temperature:{value:27.9},pvToday:{id:0,value:null,unit:'kWh'},importToday:{id:12345,value:2.3,unit:'kWh',label:'Netzbezug heute',history:[],archive:false}}),d=dom.window.document;
+  for(const key of ['temperature','batteryAvailable','batteryCapacity','batteryHealth','evTotal']) {
+    assert.equal(d.querySelector('#'+key),null);
+    assert.equal(d.querySelector('[data-key="'+key+'"]'),null);
+  }
+  assert.equal(d.querySelector('[data-key="pvToday"]').hidden,true);
+  d.querySelector('[data-key="importToday"]').click();
   assert.match(d.querySelector('#title').textContent,/Netzbezug heute/);
-  assert.equal(field('evTotal').hidden,true);
   dom.window.close();
+  const empty=render();
+  assert.equal(empty.window.document.querySelector('.details').hidden,true);
+  empty.window.close();
 });

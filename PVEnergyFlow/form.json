@@ -45,11 +45,6 @@
     },
     {
       "type": "SelectVariable",
-      "name": "BatteryTemperatureVariable",
-      "caption": "Speichertemperatur (°C)"
-    },
-    {
-      "type": "SelectVariable",
       "name": "GridImportVariable",
       "caption": "Netzbezug gesamt (kWh)"
     },
@@ -62,26 +57,6 @@
       "type": "SelectVariable",
       "name": "WallboxSessionVariable",
       "caption": "Wallbox Ladezyklus (kWh)"
-    },
-    {
-      "type": "SelectVariable",
-      "name": "BatteryAvailableVariable",
-      "caption": "Speicher verfügbar (Quelle in Wh)"
-    },
-    {
-      "type": "SelectVariable",
-      "name": "BatteryCapacityVariable",
-      "caption": "Speicherkapazität (Quelle in Wh)"
-    },
-    {
-      "type": "SelectVariable",
-      "name": "BatteryHealthVariable",
-      "caption": "Batteriezustand (SOH) (Quelle in %)"
-    },
-    {
-      "type": "SelectVariable",
-      "name": "WallboxTotalVariable",
-      "caption": "Wallbox gesamt (Quelle in kWh)"
     },
     {
       "type": "SelectVariable",

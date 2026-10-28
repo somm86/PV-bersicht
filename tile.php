@@ -10,15 +10,10 @@ $config = [
     'ev'      => ['id' => 31735, 'factor' => 1000, 'label' => 'Wallbox', 'unit' => 'W'],
     'soc'     => ['id' => 45769, 'factor' => 1, 'label' => 'Speicherstand', 'unit' => '%'],
     'car'     => ['id' => 48784, 'factor' => 1, 'label' => 'Fahrzeugakku', 'unit' => '%'],
-    'pvTotal' => ['id' => 54550, 'factor' => 1, 'label' => 'PV-Erzeugung gesamt', 'unit' => 'kWh'],
-    'temperature' => ['id' => 22147, 'factor' => 1, 'label' => 'Speichertemperatur', 'unit' => '°C'],
-    'gridImport' => ['id' => 30181, 'factor' => 1, 'label' => 'Netzbezug gesamt', 'unit' => 'kWh'],
-    'gridExport' => ['id' => 29267, 'factor' => 1, 'label' => 'Netzeinspeisung gesamt', 'unit' => 'kWh'],
-    'evSession' => ['id' => 17564, 'factor' => 1, 'label' => 'Wallbox Ladezyklus', 'unit' => 'kWh'],
-    'batteryAvailable' => ['id' => 44710, 'factor' => 0.001, 'label' => 'Speicher verfügbar', 'unit' => 'kWh'],
-    'batteryCapacity' => ['id' => 20923, 'factor' => 0.001, 'label' => 'Speicherkapazität', 'unit' => 'kWh'],
-    'batteryHealth' => ['id' => 47552, 'factor' => 1, 'label' => 'Batteriezustand (SOH)', 'unit' => '%'],
-    'evTotal' => ['id' => 37027, 'factor' => 1, 'label' => 'Wallbox gesamt', 'unit' => 'kWh'],
+    'pvTotal' => ['id' => 54550, 'factor' => 1, 'label' => 'PV-Erzeugung gesamt', 'unit' => 'kWh', 'chart' => false],
+    'gridImport' => ['id' => 30181, 'factor' => 1, 'label' => 'Netzbezug gesamt', 'unit' => 'kWh', 'chart' => false],
+    'gridExport' => ['id' => 29267, 'factor' => 1, 'label' => 'Netzeinspeisung gesamt', 'unit' => 'kWh', 'chart' => false],
+    'evSession' => ['id' => 17564, 'factor' => 1, 'label' => 'Wallbox Ladezyklus', 'unit' => 'kWh', 'chart' => false],
     'pvToday' => ['id' => 0, 'factor' => 1, 'label' => 'PV heute', 'unit' => 'kWh'],
     'importToday' => ['id' => 0, 'factor' => 1, 'label' => 'Netzbezug heute', 'unit' => 'kWh'],
     'exportToday' => ['id' => 0, 'factor' => 1, 'label' => 'Einspeisung heute', 'unit' => 'kWh'],
@@ -40,7 +35,7 @@ foreach ($config as $key => $item) {
     if (IPS_VariableExists($item['id'])) {
         $raw = GetValue($item['id']);
         if (is_numeric($raw)) $entry['value'] = (float)$raw * $item['factor'];
-        if ($archive) {
+        if ($archive && ($item['chart'] ?? true)) {
             try {
                 $entry['archive'] = AC_GetLoggingStatus($archive, $item['id']);
                 if ($entry['archive']) {

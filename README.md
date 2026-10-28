@@ -57,14 +57,9 @@ Der Name `PV-bersicht-main` aus dem ZIP und ein zusätzlicher verschachtelter Or
 | Speicherstand | 45769 | % |
 | Fahrzeugakku | 48784 | % |
 | PV-Erzeugung gesamt | 54550 | kWh laut Screenshot |
-| Speichertemperatur | 22147 | °C laut Screenshot |
 | Netzbezug gesamt | 30181 | kWh laut Screenshot |
 | Netzeinspeisung gesamt | 29267 | kWh laut Screenshot |
 | Wallbox Ladezyklus | 17564 | kWh laut Screenshot |
-| Speicher verfügbar | 44710 | Wh → kWh (Faktor 0,001) |
-| Speicherkapazität | 20923 | Wh → kWh (Faktor 0,001) |
-| Batteriezustand (SOH) | 47552 | % |
-| Wallbox gesamt | 37027 | kWh |
 | PV / Netzbezug / Einspeisung heute | 0 | Optional: jeweilige Tagesvariable in kWh auswählen |
 
 **Die oben genannten Rohwerteinheiten sind vom Nutzer bestätigt:** PV, Speicher und Netz liefern Watt; die Wallbox liefert Kilowatt. Die voreingestellten Faktoren passen dazu. Bei einem späteren Wechsel der Quellen die Rohwerte erneut prüfen: Für W Faktor 1, für kW Faktor 1000 verwenden. Bei entgegengesetzter Zählrichtung den Faktor negieren. IDs lassen sich zentral am Anfang von `tile.php` ändern; nicht vorhandene Werte erscheinen als „—“.
@@ -73,7 +68,7 @@ Die PV-Quelle 22209 („mit Speicherberücksichtigung“) liefert laut Bestätig
 
 ## Darstellung
 
-Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie räumliche SVG-Illustrationen mit perspektivischen Seitenflächen, Glas- und Metallverläufen sowie Bodenschatten für Solarmodule, Batterie, Haus, Strommast und Wallbox mit Fahrzeug sowie animierte Leitungen zeigen die Anlage. Die zentrale Hauskarte ist ohne umlaufende Kreise gestaltet und zeigt ein Haussymbol und den berechneten Leistungswert ohne Textbeschriftung; die Berechnung bleibt unverändert. Speicher- und Fahrzeugladestand erscheinen zusätzlich als Balken. PV-Gesamterzeugung, Speichertemperatur, Netzenergiezähler und Energie im Wallbox-Ladezyklus ergänzen die Leistungswerte. Eine zusätzliche Detailleiste zeigt verfügbare Speicherenergie, Speicherkapazität, Batteriezustand und den Wallbox-Gesamtzähler. Drei optionale Tageswerte (PV, Netzbezug, Einspeisung) werden erst sichtbar, wenn die jeweiligen kWh-Variablen in der Instanz gewählt sind. Die Screenshots zeigen dafür VerbrauchZeitspanne-Instanzen, aber keine sicher zuordenbaren Ergebnisvariablen; deshalb sind diese IDs mit 0 vorbelegt. Es handelt sich bei den Gesamtwerten ausdrücklich nicht um Tageswerte. Detailwerte sind separat für den Archivverlauf anklickbar; nicht zugeordnete Werte erscheinen als „—“.
+Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie räumliche SVG-Illustrationen mit perspektivischen Seitenflächen, Glas- und Metallverläufen sowie Bodenschatten für Solarmodule, Batterie, Haus, Strommast und Wallbox mit Fahrzeug sowie animierte Leitungen zeigen die Anlage. Die zentrale Hauskarte ist ohne umlaufende Kreise gestaltet und zeigt ein Haussymbol und den berechneten Leistungswert ohne Textbeschriftung; die Berechnung bleibt unverändert. Speicher- und Fahrzeugladestand erscheinen zusätzlich als Balken. PV-Gesamterzeugung, Netzenergiezähler und Energie im Wallbox-Ladezyklus ergänzen die Leistungswerte. Die Gesamtwerte sind reine Zählerstände in kWh; sie und der Ladezyklus haben keinen Diagrammaufruf und verursachen keine Archivabfragen. Klicks auf diese Zahlen öffnen auch nicht versehentlich den Leistungsgraphen der übergeordneten Karte. Die untere Viererzeile und die Speichertemperatur wurden entfernt. Drei optionale Tageswerte (PV, Netzbezug, Einspeisung) werden erst sichtbar, wenn die jeweiligen kWh-Variablen in der Instanz gewählt sind. Die Screenshots zeigen dafür VerbrauchZeitspanne-Instanzen, aber keine sicher zuordenbaren Ergebnisvariablen; deshalb sind diese IDs mit 0 vorbelegt. Es handelt sich bei den Gesamtwerten ausdrücklich nicht um Tageswerte. Leistungswerte, Akkustände und optional konfigurierte Tageswerte sind für den Archivverlauf anklickbar; nicht zugeordnete Werte erscheinen als „—“.
 
 ## Archiv und Aktualisierung
 

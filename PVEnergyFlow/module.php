@@ -12,14 +12,9 @@ class PVEnergyFlow extends IPSModule
         $this->RegisterPropertyInteger('BatterySOCVariable', 45769);
         $this->RegisterPropertyInteger('CarSOCVariable', 48784);
         $this->RegisterPropertyInteger('PVTotalVariable', 54550);
-        $this->RegisterPropertyInteger('BatteryTemperatureVariable', 22147);
         $this->RegisterPropertyInteger('GridImportVariable', 30181);
         $this->RegisterPropertyInteger('GridExportVariable', 29267);
         $this->RegisterPropertyInteger('WallboxSessionVariable', 17564);
-        $this->RegisterPropertyInteger('BatteryAvailableVariable', 44710);
-        $this->RegisterPropertyInteger('BatteryCapacityVariable', 20923);
-        $this->RegisterPropertyInteger('BatteryHealthVariable', 47552);
-        $this->RegisterPropertyInteger('WallboxTotalVariable', 37027);
         $this->RegisterPropertyInteger('PVTodayVariable', 0);
         $this->RegisterPropertyInteger('GridImportTodayVariable', 0);
         $this->RegisterPropertyInteger('GridExportTodayVariable', 0);
@@ -68,14 +63,9 @@ class PVEnergyFlow extends IPSModule
                 'soc' => $this->ReadPropertyInteger('BatterySOCVariable'),
                 'car' => $this->ReadPropertyInteger('CarSOCVariable'),
                 'pvTotal' => $this->ReadPropertyInteger('PVTotalVariable'),
-                'temperature' => $this->ReadPropertyInteger('BatteryTemperatureVariable'),
                 'gridImport' => $this->ReadPropertyInteger('GridImportVariable'),
                 'gridExport' => $this->ReadPropertyInteger('GridExportVariable'),
                 'evSession' => $this->ReadPropertyInteger('WallboxSessionVariable'),
-                'batteryAvailable' => $this->ReadPropertyInteger('BatteryAvailableVariable'),
-                'batteryCapacity' => $this->ReadPropertyInteger('BatteryCapacityVariable'),
-                'batteryHealth' => $this->ReadPropertyInteger('BatteryHealthVariable'),
-                'evTotal' => $this->ReadPropertyInteger('WallboxTotalVariable'),
                 'pvToday' => $this->ReadPropertyInteger('PVTodayVariable'),
                 'importToday' => $this->ReadPropertyInteger('GridImportTodayVariable'),
                 'exportToday' => $this->ReadPropertyInteger('GridExportTodayVariable'),
