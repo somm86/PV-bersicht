@@ -230,3 +230,11 @@ test('daily counters never plot unconfigured aggregation as consumption',()=>{
  assert.equal(d.querySelectorAll('.daily-bar').length,0);
  dom.window.close();
 });
+
+test('battery card hides only when both SOC and battery power are exactly zero',()=>{
+ for(const [soc,power,visible] of [[0,0,false],[0,1,true],[0,-1,true],[1,0,true],[null,0,true],[0,null,true],[null,null,true]]) {
+  const dom=render({soc:{value:soc},battery:{value:power}}),d=dom.window.document;
+  for(const id of ['battery','batteryWire','batteryLine','batteryPort'])assert.equal(d.getElementById(id).style.display!=='none',visible,id+' SOC='+soc+' power='+power);
+  dom.window.close();
+ }
+});

@@ -72,7 +72,7 @@ Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie räumlich
 
 Die übrigen kWh-Anzeigen einschließlich Ladezyklus öffnen einen Zählergraphen mit den archivierten Rohständen. So bleibt die Einheit kWh erhalten; Zähler werden nicht als Leistungswerte oder Stundenmittel dargestellt. Bei einer Rücksetzung wird die Kurve getrennt; ein Zuwachs wird dann nicht ausgewiesen. Bei monotonen Werten wird der Zuwachs zwischen erstem und letztem angezeigtem Archivwert genannt, nicht als vollständiger Tagesverbrauch ausgegeben. Die untere Viererzeile und die Speichertemperatur wurden entfernt. Drei optionale Tageswerte (PV, Netzbezug, Einspeisung) werden erst sichtbar, wenn die jeweiligen kWh-Variablen in der Instanz gewählt sind. Die Screenshots zeigen dafür VerbrauchZeitspanne-Instanzen, aber keine sicher zuordenbaren Ergebnisvariablen; deshalb sind diese IDs mit 0 vorbelegt. Es handelt sich bei den Gesamtwerten ausdrücklich nicht um Tageswerte. Leistungswerte, Akkustände und kWh-Werte sind für den Archivverlauf anklickbar; nicht zugeordnete Werte erscheinen als „—“.
 
-Die PV-Karte wird bei einer Erzeugung von weniger als 1 W ausgeblendet; die Netzkarte bei −10 W bis +10 W einschließlich der Grenzen. Die Wallbox-Karte wird bei weniger als 0,1 kW (100 W) ausgeblendet; bei genau 0,1 kW bleibt sie sichtbar. Zugehörige Leitungen und Anschlüsse verschwinden ebenfalls. Die Leistungsbilanz verwendet weiter die tatsächlichen Messwerte. Bei fehlenden Messwerten bleiben die Karten als unbekannt sichtbar.
+Die PV-Karte wird bei einer Erzeugung von weniger als 1 W ausgeblendet; die Netzkarte bei −10 W bis +10 W einschließlich der Grenzen. Die Wallbox-Karte wird bei weniger als 0,1 kW (100 W) ausgeblendet; bei genau 0,1 kW bleibt sie sichtbar. Die Speicher-Karte wird nur ausgeblendet, wenn Ladestand und Speicherleistung beide exakt 0 sind. Zugehörige Leitungen und Anschlüsse verschwinden ebenfalls. Die Leistungsbilanz verwendet weiter die tatsächlichen Messwerte. Bei fehlenden Messwerten bleiben die Karten als unbekannt sichtbar.
 
 ## Ladephasen und Restladezeit
 
@@ -95,7 +95,7 @@ npm ci
 npm test
 ```
 
-Einundzwanzig automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
+Zweiundzwanzig automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
 
 Optional mit lokal installiertem PHP und Chromium:
 
