@@ -98,3 +98,13 @@ test('every published top-level directory is a valid Symcon module',()=>{
     assert.ok(fs.existsSync(path.join(root,directory,'module.json')),directory+' must contain module.json');
   }
 });
+
+test('native tile callback updates its isolated frame',()=>{
+  const dom=new JSDOM('<iframe title="PV Energiefluss"></iframe>'+fs.readFileSync(path.join(root,'PVEnergyFlow/assets/native.html'),'utf8'),{runScripts:'dangerously'});
+  const frame=dom.window.document.querySelector('iframe');
+  dom.window.handleMessage('<html><body>Aktualisiert</body></html>');
+  assert.equal(frame.srcdoc,'<html><body>Aktualisiert</body></html>');
+  dom.window.handleMessage(null);
+  assert.equal(frame.srcdoc,'<html><body>Aktualisiert</body></html>');
+  dom.window.close();
+});

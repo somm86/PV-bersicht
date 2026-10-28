@@ -1,0 +1,9 @@
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden}iframe{min-height:0!important}</style>
+<script>
+// Symcon ruft diesen Callback bei UpdateVisualizationValue auf.
+function handleMessage(html) {
+    if (typeof html !== 'string') return;
+    const frame = document.querySelector('iframe[title="PV Energiefluss"]');
+    if (frame) frame.srcdoc = html;
+}
+</script>

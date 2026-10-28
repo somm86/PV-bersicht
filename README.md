@@ -10,7 +10,9 @@ Voraussetzung: IP-Symcon ab 7.0. Dieses Repository enthält jetzt eine `library.
 2. Eine neue Instanz **PV Energiefluss** anlegen.
 3. In der Instanzkonfiguration die sechs Variablen auswählen. Die IDs aus den Screenshots sind voreingestellt. PV, Speicher und Netz müssen W liefern; die Wallbox kW. Netz positiv = Bezug, Speicher positiv = Laden.
 4. Änderungen übernehmen. Unter der Instanz wird die HTMLBox-Variable **PV Energiefluss** erstellt und regelmäßig aktualisiert. Mit **Jetzt aktualisieren** lässt sie sich sofort erneuern.
-5. Diese Variable in die Kachelvisualisierung bzw. eine kompatible IPSView-HTMLBox aufnehmen. Es müssen keine Dateien manuell in das Skriptverzeichnis kopiert werden.
+5. Für die native PHP/HTML-Kachel in der Kachel Visu die **Instanz „PV Energiefluss“ selbst** in die Visualisierung aufnehmen. Das Modul stellt die HTML-Ausgabe über `GetVisualizationTile()` bereit und aktualisiert sie über `UpdateVisualizationValue()`. Für IPSView bleibt alternativ die darunterliegende HTMLBox-Variable verfügbar. Es müssen keine Dateien manuell in das Skriptverzeichnis kopiert werden.
+
+Die native Darstellung setzt eine Symcon-Version mit HTML-Instanzvisualisierung (`SetVisualizationType`) voraus. Nach dem Modulupdate die Instanzkonfiguration einmal übernehmen. Falls die Instanz auf deiner Version nicht als Kachel angeboten wird, Symcon-Version nennen; bis dahin die HTMLBox verwenden. Die native API-Anbindung ist lokal geprüft, ihre Darstellung auf dem Zielsystem noch nicht.
 
 Wenn bereits die Skriptversion läuft, deren Skripttimer auf 0 setzen und die neue HTMLBox verwenden, um doppelte Aktualisierungen zu vermeiden. Die Modulinstallation wurde hier anhand der Metadaten und PHP-Syntax geprüft; der Test in einer echten Symcon-Laufzeit steht noch aus.
 
@@ -74,7 +76,7 @@ npm ci
 npm test
 ```
 
-Zehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
+Elf automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
 
 Optional mit lokal installiertem PHP und Chromium:
 

@@ -20,6 +20,10 @@ class PVEnergyFlow extends IPSModule
     {
         parent::ApplyChanges();
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+        // Native HTML/PHP-Kachel; HTMLBox bleibt für andere Clients verfügbar.
+        if (method_exists($this, 'SetVisualizationType')) {
+            $this->SetVisualizationType(1);
+        }
         if (IPS_GetKernelRunlevel() === KR_READY) {
             $this->StartUpdating();
         }
@@ -55,6 +59,16 @@ class PVEnergyFlow extends IPSModule
         ];
         // Gemeinsamer Renderer; im Modulmodus wird kein Skripttimer angelegt.
         include dirname(__DIR__) . '/tile.php';
+        if (method_exists($this, 'UpdateVisualizationValue')) {
+            $this->UpdateVisualizationValue($html);
+        }
+    }
+
+    public function GetVisualizationTile()
+    {
+        // Die HTMLBox enthält bereits die initiale, sicher escaped srcdoc-Ausgabe.
+        $initial = GetValue($this->GetIDForIdent('PVEnergyTile'));
+        return $initial . file_get_contents(__DIR__ . '/assets/native.html');
     }
 
     public function GetConfigurationForm()
