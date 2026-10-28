@@ -196,3 +196,14 @@ test('phase and remaining-time section is visible only above 100 W',()=>{
   dom.window.close();
  }
 });
+
+test('PV and grid cards and connections respect inclusive idle thresholds',()=>{
+ for(const [key,cases] of [['pv',[[null,true],[-1,false],[0,false],[5,false],[5.01,true]]],['grid',[[null,true],[-10.01,true],[-10,false],[0,false],[10,false],[10.01,true]]]]) {
+  for(const [power,visible] of cases) {
+   const dom=render({[key]:{value:power}}),d=dom.window.document;
+   for(const id of [key,key+'Wire',key+'Line',key+'Port'])assert.equal(d.getElementById(id).style.display!=='none',visible,key+' '+power+' W: '+id);
+   assert.notEqual(d.querySelector('#house').style.display,'none');
+   dom.window.close();
+  }
+ }
+});

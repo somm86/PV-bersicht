@@ -70,6 +70,8 @@ Die PV-Quelle 22209 („mit Speicherberücksichtigung“) liefert laut Bestätig
 
 Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie räumliche SVG-Illustrationen mit perspektivischen Seitenflächen, Glas- und Metallverläufen sowie Bodenschatten für Solarmodule, Batterie, Haus, Strommast und Wallbox mit Fahrzeug sowie animierte Leitungen zeigen die Anlage. Die zentrale Hauskarte ist ohne umlaufende Kreise gestaltet und zeigt ein Haussymbol und den berechneten Leistungswert ohne Textbeschriftung; die Berechnung bleibt unverändert. Speicher- und Fahrzeugladestand erscheinen zusätzlich als Balken. PV-Gesamterzeugung, Netzenergiezähler und Energie im Wallbox-Ladezyklus ergänzen die Leistungswerte. Alle kWh-Anzeigen einschließlich Ladezyklus öffnen jetzt einen eigenen Zählergraphen mit den archivierten Rohständen. So bleibt die Einheit kWh erhalten; Zähler werden nicht als Leistungswerte oder Stundenmittel dargestellt. Bei einer Rücksetzung wird die Kurve getrennt; ein Zuwachs wird dann nicht ausgewiesen. Bei monotonen Werten wird der Zuwachs zwischen erstem und letztem angezeigtem Archivwert genannt, nicht als vollständiger Tagesverbrauch ausgegeben. Die untere Viererzeile und die Speichertemperatur wurden entfernt. Drei optionale Tageswerte (PV, Netzbezug, Einspeisung) werden erst sichtbar, wenn die jeweiligen kWh-Variablen in der Instanz gewählt sind. Die Screenshots zeigen dafür VerbrauchZeitspanne-Instanzen, aber keine sicher zuordenbaren Ergebnisvariablen; deshalb sind diese IDs mit 0 vorbelegt. Es handelt sich bei den Gesamtwerten ausdrücklich nicht um Tageswerte. Leistungswerte, Akkustände und kWh-Werte sind für den Archivverlauf anklickbar; nicht zugeordnete Werte erscheinen als „—“.
 
+Die PV-Karte wird bei einer Erzeugung von höchstens 5 W ausgeblendet; die Netzkarte bei −10 W bis +10 W einschließlich der Grenzen. Zugehörige Leitungen und Anschlüsse verschwinden ebenfalls. Die Leistungsbilanz verwendet weiter die tatsächlichen Messwerte. Bei fehlenden Messwerten bleiben die Karten als unbekannt sichtbar.
+
 ## Ladephasen und Restladezeit
 
 Der größere Wallbox-Bereich zeigt die aktive Phasenanzahl und die verbleibende Ladezeit. Die bestätigten IDs sind **23503** für die Phasenanzahl (Integer 0, 1 oder 3) und **56785** für die Restladezeit. Sie sind als Vorgaben hinterlegt. In bestehenden Instanzen ggf. die IDs in **Aktive Ladephasen** und **Verbleibende Ladezeit** auswählen.
@@ -91,7 +93,7 @@ npm ci
 npm test
 ```
 
-Achtzehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
+Neunzehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
 
 Optional mit lokal installiertem PHP und Chromium:
 
