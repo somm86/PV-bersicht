@@ -96,6 +96,7 @@ const archiveStamp=()=>data?.archiveUpdated?' · Archivstand '+new Date(data.arc
 const format=(x,unit='W')=>x==null?'—':unit==='W'?(Math.abs(x)>=1000?(Math.abs(x)/1000).toLocaleString('de-DE',{maximumFractionDigits:2})+' kW':Math.round(Math.abs(x))+' W'):unit==='kWh'?x.toLocaleString('de-DE',{maximumFractionDigits:2})+' kWh':unit==='°C'?x.toLocaleString('de-DE',{maximumFractionDigits:1})+' °C':Math.round(x)+' %';
 const value=k=>v[k]?.value??null;
 const set=(k,cls,t)=>document.querySelector('#'+k+' .'+cls).textContent=t;
+const animatedFlows=new Map();
 function line(k,power,reverse,color) {
  const el=document.getElementById(k+'Line');
  const flowing=power!=null&&(k==='pv'?power>=1:k==='grid'?Math.abs(power)>10:k==='ev'?power>=100:Math.abs(power)>0);
@@ -103,16 +104,8 @@ function line(k,power,reverse,color) {
  el.setAttribute('class',flowing?'active'+(reverse?' reverse':''):'');
  el.setAttribute('stroke-dashoffset','0');
  el.style.color=color;el.style.stroke=flowing?color:'none';
- // Native SVG-Animation: läuft im Client, ohne PHP-Timer oder zusätzliche Abfragen.
- const reducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- if(flowing&&!reducedMotion){
-  const motion=document.createElementNS('http://www.w3.org/2000/svg','animate');
-  motion.setAttribute('attributeName','stroke-dashoffset');
-  motion.setAttribute('values',reverse?'0;40':'0;-40');
-  motion.setAttribute('dur','1.2s');
-  motion.setAttribute('repeatCount','indefinite');
-  el.append(motion);
- }
+ if(flowing)animatedFlows.set(el,reverse?1:-1);
+ else animatedFlows.delete(el);
 }
 for(const k of ['pv','battery','grid','ev'])set(k,'value',format(value(k)));
 // Fehlende Messwerte bleiben als unbekannt sichtbar, statt als Null zu gelten.
@@ -235,4 +228,23 @@ for(const metric of document.querySelectorAll('[data-static]')) {
 }
 for(const metric of document.querySelectorAll('[data-key]')){metric.setAttribute('role','button');metric.setAttribute('tabindex','0');metric.onclick=e=>{e.stopPropagation();chart(metric.dataset.key);};metric.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();chart(metric.dataset.key);}};}
 for(const k of ['pv','battery','grid','ev']){const el=document.getElementById(k);el.onclick=()=>chart(k);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chart(k);}};}
+// Direkte Positionsänderung für die WebView der Symcon-App: kein SMIL/CSS nötig.
+// Ein gemeinsamer Zeichenzyklus für maximal vier Leitungen, höchstens 30 Bilder/s.
+if(animatedFlows.size&&typeof window.requestAnimationFrame==='function') {
+ let started=null,lastPaint=-Infinity;
+ function animateFlows(timestamp) {
+  if(started===null)started=timestamp;
+  if(timestamp-lastPaint>=1000/30){
+   const phase=((timestamp-started)*40/1200)%40;
+   for(const [path,direction] of animatedFlows){
+    const offset=String(phase*direction);
+    path.setAttribute('stroke-dashoffset',offset);
+    path.style.strokeDashoffset=offset;
+   }
+   lastPaint=timestamp;
+  }
+  window.requestAnimationFrame(animateFlows);
+ }
+ window.requestAnimationFrame(animateFlows);
+}
 </script></html>

@@ -5,7 +5,7 @@ const path = require('node:path');
 const {JSDOM} = require('jsdom');
 const PHPParser = require('php-parser');
 const root = path.join(__dirname, '../..');
-function render(overrides = {}) {
+function render(overrides = {}, frames = null) {
   const values = {};
   for (const [key,value] of Object.entries({pv:6000,battery:1000,grid:-2000,ev:500,soc:89,car:61})) {
     values[key] = {value,label:key,archive:true,history:[{t:1700000000-3600,v:value},{t:1700000000,v:value+10}]};
@@ -14,6 +14,7 @@ function render(overrides = {}) {
   const html = fs.readFileSync(path.join(root,'PVEnergyFlow/assets/tile.html'),'utf8').replace('/*__DATA__*/null',JSON.stringify({updated:1700000000,values}));
   // jsdom lacks native dialog methods: this checks app logic, not browser dialog support.
   const dom = new JSDOM(html, {runScripts:'dangerously',beforeParse(window) {
+    if(frames)window.requestAnimationFrame=callback=>{frames.push(callback);return frames.length;};
     window.HTMLDialogElement.prototype.showModal=function(){this.open=true;};
     window.HTMLDialogElement.prototype.close=function(){this.open=false;};
   }});
@@ -243,11 +244,23 @@ test('battery card hides only when both SOC and battery power are exactly zero',
  }
 });
 
-test('native SVG flow animations respect direction and visible-power thresholds',()=>{
- for(const [key,power,values] of [['pv',1,'0;-40'],['pv',.99,null],['grid',11,'0;-40'],['grid',-11,'0;40'],['grid',10,null],['ev',100,'0;-40'],['ev',99,null],['battery',1,'0;40'],['battery',-1,'0;-40'],['battery',0,null]]) {
-  const dom=render({[key]:{value:power}}),motion=dom.window.document.querySelector('#'+key+'Line animate');
-  if(values){assert.ok(motion,key+' '+power);assert.equal(motion.getAttribute('values'),values);assert.equal(motion.getAttribute('repeatCount'),'indefinite');}
-  else assert.equal(motion,null,key+' '+power);
+test('app flow animation changes dash positions over time in the correct direction',()=>{
+ for(const [key,power,direction] of [['pv',1,-1],['pv',.99,0],['grid',11,-1],['grid',-11,1],['grid',10,0],['ev',100,-1],['ev',99,0],['battery',1,1],['battery',-1,-1],['battery',0,0]]) {
+  const frames=[],dom=render({[key]:{value:power}},frames),path=dom.window.document.getElementById(key+'Line');
+  assert.equal(path.querySelector('animate'),null,'SMIL must not be required');
+  frames.shift()(0);
+  frames.shift()(150);
+  const first=Number(path.getAttribute('stroke-dashoffset'));
+  frames.shift()(300);
+  const second=Number(path.getAttribute('stroke-dashoffset'));
+  if(direction){assert.equal(Math.sign(second),direction,key+' '+power);assert.notEqual(first,second,'dash positions must actually change');}
+  else assert.equal(second,0,key+' '+power);
+  assert.equal(Number(path.style.strokeDashoffset||0),second);
   dom.window.close();
  }
+});
+test('no animation loop is scheduled when every flow is idle',()=>{
+ const frames=[],dom=render({pv:{value:0},battery:{value:0},grid:{value:0},ev:{value:0}},frames);
+ assert.equal(frames.length,0);
+ dom.window.close();
 });
