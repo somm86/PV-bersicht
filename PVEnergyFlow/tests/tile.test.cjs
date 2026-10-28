@@ -4,14 +4,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {JSDOM} = require('jsdom');
 const PHPParser = require('php-parser');
-const root = path.join(__dirname, '..');
+const root = path.join(__dirname, '../..');
 function render(overrides = {}) {
   const values = {};
   for (const [key,value] of Object.entries({pv:6000,battery:1000,grid:-2000,ev:500,soc:89,car:61})) {
     values[key] = {value,label:key,archive:true,history:[{t:1700000000-3600,v:value},{t:1700000000,v:value+10}]};
   }
   Object.assign(values, overrides);
-  const html = fs.readFileSync(path.join(root,'assets/tile.html'),'utf8').replace('/*__DATA__*/null',JSON.stringify({updated:1700000000,values}));
+  const html = fs.readFileSync(path.join(root,'PVEnergyFlow/assets/tile.html'),'utf8').replace('/*__DATA__*/null',JSON.stringify({updated:1700000000,values}));
   // jsdom lacks native dialog methods: this checks app logic, not browser dialog support.
   const dom = new JSDOM(html, {runScripts:'dangerously',beforeParse(window) {
     window.HTMLDialogElement.prototype.showModal=function(){this.open=true;};
@@ -86,5 +86,15 @@ test('Symcon library discovery and configuration reference an implemented module
     assert.ok(source.includes("RegisterPropertyInteger('"+element.name+"'"),element.name);
   }
   for(const action of form.actions) assert.ok(action.onClick.startsWith(module.prefix+'_Update('));
-  assert.ok(fs.existsSync(path.join(root,'assets/tile.html')));
+  assert.ok(fs.existsSync(path.join(root,'PVEnergyFlow/assets/tile.html')));
+});
+
+test('every published top-level directory is a valid Symcon module',()=>{
+  // Hidden Git/CI directories and ignored development dependencies are not modules.
+  const directories=new Set(fs.readdirSync(root,{withFileTypes:true})
+    .filter(e=>e.isDirectory()&&!e.name.startsWith('.')&&e.name!=='node_modules').map(e=>e.name));
+  assert.ok(directories.has('PVEnergyFlow'));
+  for(const directory of directories) {
+    assert.ok(fs.existsSync(path.join(root,directory,'module.json')),directory+' must contain module.json');
+  }
 });

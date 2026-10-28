@@ -1,9 +1,9 @@
 import json, pathlib, subprocess, tempfile
-root = pathlib.Path(__file__).resolve().parents[1]
+root = pathlib.Path(__file__).resolve().parents[2]
 values = {}
 for key, n in dict(pv=6000,battery=1000,grid=-2000,ev=500,soc=89,car=61).items():
     values[key] = dict(value=n,label=key,archive=True,history=[dict(t=1700000000-3600,v=n),dict(t=1700000000,v=n+10)])
-page = (root/'assets/tile.html').read_text().replace('/*__DATA__*/null', json.dumps(dict(updated=1700000000,values=values)))
+page = (root/'PVEnergyFlow/assets/tile.html').read_text().replace('/*__DATA__*/null', json.dumps(dict(updated=1700000000,values=values)))
 checks = '''<script>
 try {
 function check(ok,msg){if(!ok)throw Error(msg);}

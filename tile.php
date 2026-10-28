@@ -44,7 +44,7 @@ foreach ($config as $key => $item) {
     }
     $data['values'][$key] = $entry;
 }
-$template = file_get_contents(__DIR__ . '/assets/tile.html');
+$template = file_get_contents(__DIR__ . '/PVEnergyFlow/assets/tile.html');
 $html = str_replace('/*__DATA__*/null', json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR), $template);
 // Ident innerhalb des ausführenden Symcon-Skripts: einmalig anlegen, danach aktualisieren.
 $parent = isset($pvTileContext) ? $pvTileContext['parent'] : $_IPS['SELF'];

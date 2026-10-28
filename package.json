@@ -4,6 +4,6 @@
   "private": true,
   "description": "Entwicklungsprüfungen für die Symcon HTMLBox",
   "engines": { "node": ">=22.13.0" },
-  "scripts": { "test": "node tests/tile.test.cjs" },
+  "scripts": { "test": "node PVEnergyFlow/tests/tile.test.cjs" },
   "devDependencies": { "jsdom": "30.1.3", "php-parser": "3.7.0" }
 }

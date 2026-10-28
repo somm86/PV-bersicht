@@ -37,8 +37,9 @@ Dieser Abschnitt betrifft ausschließlich die alternative Skriptinstallation. Be
 ├── 32867.ips.php             # das in Symcon angelegte aufrufende Skript
 └── PV-bersicht/
     ├── tile.php
-    └── assets/
-        └── tile.html
+    └── PVEnergyFlow/
+        └── assets/
+            └── tile.html
 ```
 
 Der Name `PV-bersicht-main` aus dem ZIP und ein zusätzlicher verschachtelter Ordner sind häufige Ursachen für „No such file or directory“. Der Ausdruck `__DIR__` im aufrufenden Skript verwendet dessen tatsächliches Verzeichnis, auch wenn `IPS_GetKernelDir()` einen anderen Pfad zurückgibt. Anschließend das Skript in Symcon erneut ausführen.
@@ -66,20 +67,20 @@ Die gesamte HTMLBox wird standardmäßig alle 30 Sekunden erneuert (im Modul kon
 
 ## Entwicklung und Prüfung
 
-Bestehenden Checkout verwenden; kein zusätzlicher Worktree nötig. Die Kachel selbst benötigt keine Node-Abhängigkeiten; die Entwicklungsprüfungen benötigen Node.js ab 22.13 und die fest versionierten Dev-Abhängigkeiten. JavaScript befindet sich in `assets/tile.html`.
+Bestehenden Checkout verwenden; kein zusätzlicher Worktree nötig. Die Kachel selbst benötigt keine Node-Abhängigkeiten; die Entwicklungsprüfungen benötigen Node.js ab 22.13 und die fest versionierten Dev-Abhängigkeiten. JavaScript befindet sich in `PVEnergyFlow/assets/tile.html`. Auf Repository-Ebene liegt nur der Modulordner `PVEnergyFlow`; Ressourcen und Tests liegen darin, damit Symcon sie nicht als weitere Module interpretiert.
 
 ```sh
 npm ci
 npm test
 ```
 
-Neun automatisierte Prüfungen bestanden (einschließlich Modulmetadaten und Konfigurationszuordnung): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
+Zehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
 
 Optional mit lokal installiertem PHP und Chromium:
 
 ```sh
 php -l tile.php
-python3 tests/smoke.py
+python3 PVEnergyFlow/tests/smoke.py
 ```
 
 Der Chromium-Smoke-Test prüft synthetische Daten im echten Headless-Browser. Er konnte in dieser Cloud-Instanz wegen eines Chromium-Start-Timeouts nicht abgeschlossen werden. PHP CLI ist hier nicht verfügbar; die PHP-Syntax wurde per Parser geprüft, die Symcon-API und PHP-Ausführung bislang nicht. Installation auf dem echten Symcon-System, Kachel Visu und IPSView bleiben notwendige Integrationstests.
