@@ -86,7 +86,25 @@ Die Restladezeit wird mit `GetValueFormatted(56785)` direkt aus Symcon übernomm
 
 Für die jeweilige Variable muss die Archivierung im Archive Control aktiv sein. Für die übrigen kWh-Rohwertgraphen werden maximal die letzten 2000 Rohwerte innerhalb der letzten 24 Stunden geladen. Wird die Grenze erreicht, weist das Diagramm auf die mögliche zeitliche Unvollständigkeit hin; Lücken werden nicht verbunden. Antippen eines Leistungswertes öffnet dessen Verlauf; beim Speicher und bei der Wallbox ist auch der jeweilige Akkustand erreichbar. Es wird die erste Archive-Control-Instanz verwendet. Bereits aufgezeichnete Daten müssen für Stundenaggregate verfügbar sein. Fehlende Archivierung, leere Zeitbereiche und Lesefehler werden separat angezeigt. Die Grafik verwendet die konfigurierten Faktoren einschließlich Vorzeichen; die aktuelle Leistungsanzeige zeigt den Betrag plus Richtung. Leistungsdiagramme zeigen Stundenmittel, keine Spitzen oder Energiebilanzen. Zählerdiagramme zeigen dagegen protokollierte kWh-Rohstände mit Dezimalstellen und ohne erzwungenen Nullpunkt.
 
-Die gesamte HTMLBox wird standardmäßig alle 30 Sekunden erneuert (im Modul konfigurierbar); dabei kann ein geöffnetes Diagramm schließen. Dies vermeidet einen öffentlich erreichbaren Datenendpunkt. Keine automatische Aktivierung von Archivierung oder Steuerung von Wallbox/Speicher. Die eingebettete Seite benötigt JavaScript und moderne WebView-Unterstützung (`dialog`, SVG, srcdoc). Animationen stoppen bei aktivierter Systemeinstellung für reduzierte Bewegung.
+Livewerte werden standardmäßig alle 30 Sekunden gelesen; Archivdaten werden separat für 300 Sekunden zwischengespeichert. Beide Intervalle sind in der Instanz einstellbar (Livewerte mindestens 10 s, Archiv mindestens 60 s). Die HTMLBox wird mit jedem Livezyklus erneuert; dabei kann ein geöffnetes Diagramm schließen. Dies vermeidet einen öffentlich erreichbaren Datenendpunkt. Keine automatische Aktivierung von Archivierung oder Steuerung von Wallbox/Speicher. Die eingebettete Seite benötigt JavaScript und moderne WebView-Unterstützung (`dialog`, SVG, srcdoc). Animationen stoppen bei aktivierter Systemeinstellung für reduzierte Bewegung.
+
+## CPU-Last und Aktualisierungsintervalle
+
+In **PV-Übersicht** sind die Felder **Livewerte: Intervall in Sekunden** (Standard 30) und **Archivdaten: Intervall in Sekunden** (Standard 300) getrennt. Einstellungen übernehmen. **Livewerte jetzt aktualisieren** liest neue Messwerte und nutzt das Archiv aus dem Cache. **Archiv jetzt aktualisieren** leert den Cache und lädt sofort neu. Nach einem Neustart, geänderten Variablen-IDs, einem Wechsel der Archivinstanz oder dem Tageswechsel wird ebenfalls sofort neu gelesen. Fehler und leere Archivantworten werden bis zur nächsten Archivaktualisierung mit gespeichert, damit kein Fehler jede halbe Minute weitere Abfragen verursacht.
+
+Der Cache liegt bei Modulinstanzen im Symcon-Instanzbuffer, in der alternativen Skriptversion in einer temporären Datei je Skript-ID. Livewerte sind nicht im Archivcache enthalten. Im Diagramm wird der Archivzeitpunkt angezeigt; dessen Inhalt kann regulär bis zu fünf Minuten hinter den Livewerten liegen. Eine Neuaggregation oder geänderte Archiveinstellungen werden spätestens bei der nächsten Archivaktualisierung sichtbar, mit dem Archivknopf sofort.
+
+Bei Standardintervallen sinkt die Häufigkeit der Archivabfragen von zehn auf eine pro fünf Minuten, also um etwa 90 %. Das ist keine Messung oder Zusage einer um 90 % geringeren gesamten CPU-Last: Variablenlesen, HTML-Erzeugung und das Senden an die Visualisierung laufen weiterhin alle 30 Sekunden.
+
+### Andere Symcon-Module
+
+1. Die jeweilige Instanz in der Symcon-Konsole öffnen und nach **Abfrageintervall**, **Aktualisierungsintervall** oder **Polling** suchen.
+2. Für häufig benötigte Livewerte z. B. 30–60 Sekunden einstellen. Falls das Modul ein eigenes Archiv-/Diagrammintervall anbietet, dafür z. B. 300 Sekunden wählen und Änderungen übernehmen. Einheiten beachten: Manche Module verwenden Minuten oder Millisekunden.
+3. Wenn es nur ein Intervall gibt, betrifft eine Erhöhung oft auch die Gerätewerte. Die schnelle Erfassung und die langsamere Archivverarbeitung lassen sich nur trennen, wenn das Modul das unterstützt oder entsprechend geändert wird.
+4. Bei eigenen PHP-Skripten kann das zyklische Ereignis im Objektbaum angepasst werden. Ein vom Modul verwalteter Timer sollte über dessen Konfiguration geändert werden; direkte Änderungen werden möglicherweise beim nächsten Übernehmen überschrieben.
+5. Für selbst entwickelte Module: Livewerte und Archivdaten in getrennte Routinen aufteilen, Historien im Instanzbuffer speichern und über einen eigenen Zeitstempel nur bei Ablauf neu lesen. Historie nicht bei jedem Variablenereignis erneut abfragen. Bei neuen Quellen und Zeiträumen den Cache verwerfen. Die Implementierung in `ArchiveCache.php` und der Instanzbuffer in `module.php` dienen als Beispiel.
+
+Eine universelle Symcon-Einstellung, die diese Trennung automatisch auf alle Module überträgt, gibt es nicht. Bei Modulen mit Push-/MQTT-Daten kommen Werte ereignisgesteuert; ein Pollingintervall ist dort möglicherweise gar nicht vorhanden. Die Symcon-Archivierung selbst muss für diese Optimierung nicht seltener erfolgen und wird nicht abgeschaltet.
 
 ## Entwicklung und Prüfung
 
@@ -103,7 +121,8 @@ Optional mit lokal installiertem PHP und Chromium:
 
 ```sh
 php -l tile.php
+php PVEnergyFlow/tests/archive-cache.php
 python3 PVEnergyFlow/tests/smoke.py
 ```
 
-Der Chromium-Smoke-Test prüft synthetische Daten im echten Headless-Browser. Er konnte in dieser Cloud-Instanz wegen eines Chromium-Start-Timeouts nicht abgeschlossen werden. PHP CLI ist hier nicht verfügbar; die PHP-Syntax wurde per Parser geprüft, die Symcon-API und PHP-Ausführung bislang nicht. Installation auf dem echten Symcon-System, Kachel Visu und IPSView bleiben notwendige Integrationstests.
+Der Chromium-Smoke-Test prüft synthetische Daten im echten Headless-Browser. Er konnte in dieser Cloud-Instanz wegen eines Chromium-Start-Timeouts nicht abgeschlossen werden. Zusätzlich wurden die PHP-Syntax und der Cache-/Renderer-Funktionstest mit PHP 8.4 CLI ausgeführt. Der Test simuliert die verwendeten Symcon-APIs: Er prüft Archivaufrufzahlen, die 300-Sekunden-Grenze, Cache-Invalidierung, Fehler und weiterhin aktuelle Livewerte. Das ersetzt keinen Test in einer echten Symcon-Laufzeit. Installation auf dem echten Symcon-System, Kachel Visu und IPSView bleiben notwendige Integrationstests.

@@ -86,15 +86,26 @@
     {
       "type": "NumberSpinner",
       "name": "RefreshSeconds",
-      "caption": "Aktualisierung in Sekunden (mindestens 10)",
+      "caption": "Livewerte: Intervall in Sekunden (mindestens 10)",
       "minimum": 10
+    },
+    {
+      "type": "NumberSpinner",
+      "name": "ArchiveRefreshSeconds",
+      "caption": "Archivdaten: Intervall in Sekunden (Standard 300)",
+      "minimum": 60
     }
   ],
   "actions": [
     {
       "type": "Button",
-      "caption": "Jetzt aktualisieren",
+      "caption": "Livewerte jetzt aktualisieren",
       "onClick": "PVFLOW_Update($id);"
+    },
+    {
+      "type": "Button",
+      "caption": "Archiv jetzt aktualisieren",
+      "onClick": "PVFLOW_RefreshArchive($id);"
     }
   ]
 }

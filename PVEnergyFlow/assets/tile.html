@@ -92,6 +92,7 @@
 <script>
 const data=/*__DATA__*/null;
 const v=data?.values||{};
+const archiveStamp=()=>data?.archiveUpdated?' · Archivstand '+new Date(data.archiveUpdated*1000).toLocaleTimeString('de-DE'):'';
 const format=(x,unit='W')=>x==null?'—':unit==='W'?(Math.abs(x)>=1000?(Math.abs(x)/1000).toLocaleString('de-DE',{maximumFractionDigits:2})+' kW':Math.round(Math.abs(x))+' W'):unit==='kWh'?x.toLocaleString('de-DE',{maximumFractionDigits:2})+' kWh':unit==='°C'?x.toLocaleString('de-DE',{maximumFractionDigits:1})+' °C':Math.round(x)+' %';
 const value=k=>v[k]?.value??null;
 const set=(k,cls,t)=>document.querySelector('#'+k+' .'+cls).textContent=t;
@@ -136,7 +137,7 @@ function dailyCounterChart(entry) {
  const byDay=new Map(rows.map(p=>[p.day,p.v]));
  const available=days.filter(d=>byDay.has(d.day));
  document.getElementById('title').textContent=entry.label+' · Tageswerte (kWh)';
- document.getElementById('message').textContent=entry.error||(!entry.archive?'Archivierung nicht aktiv':!available.length?'Keine Tageswerte im Archiv vorhanden':'Letzte 7 Kalendertage · Heute vorläufig · Fehlende Tage als — · Zählerstand aktuell: '+format(entry.value,'kWh'));
+ document.getElementById('message').textContent=entry.error||(!entry.archive?'Archivierung nicht aktiv':!available.length?'Keine Tageswerte im Archiv vorhanden':'Letzte 7 Kalendertage · Heute vorläufig · Fehlende Tage als — · Zählerstand aktuell: '+format(entry.value,'kWh'))+(!entry.error&&entry.archive?archiveStamp():'');
  document.getElementById('extra').replaceChildren();
  svg.setAttribute('aria-label','Tägliche Energie in kWh, letzte sieben Kalendertage');
  svg.style.display=!entry.error&&available.length?'block':'none';
@@ -176,13 +177,13 @@ function chart(k) {
   else if(rows.length>1)message+=' · Zuwachs im angezeigten Datenbereich: '+format(rows.at(-1).v-rows[0].v,'kWh');
   if(entry.limited)message+=' · Auf die letzten 2000 Archivwerte begrenzt; Zeitraum möglicherweise unvollständig';
  }
- document.getElementById('message').textContent=message;
+ document.getElementById('message').textContent=message+(!entry.error&&entry.archive?archiveStamp():'');
  const svg=document.getElementById('chart');svg.replaceChildren();
  svg.setAttribute('aria-label',counter?'Archivierte Zählerstände in kWh':'Stundenmittel der letzten 24 Stunden');
  if(rows.length){
   const minimum=Math.min(...rows.map(p=>p.v)),maximum=Math.max(...rows.map(p=>p.v));
   const lo=counter?minimum:Math.min(0,minimum),hi=Math.max(lo+(counter ? 0.01 : 1),maximum);
-  const start=data.updated-86400,end=data.updated;
+  const end=data.archiveUpdated??data.updated,start=end-86400;
   const x=t=>65+(t-start)/(end-start)*545,y=n=>180-(n-lo)/(hi-lo)*155;
   const ns='http://www.w3.org/2000/svg';
   function add(tag,attrs,text){const e=document.createElementNS(ns,tag);for(const [a,b]of Object.entries(attrs))e.setAttribute(a,b);if(text)e.textContent=text;svg.append(e);}

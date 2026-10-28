@@ -21,6 +21,7 @@ class PVEnergyFlow extends IPSModule
         $this->RegisterPropertyInteger('WallboxPhasesVariable', 23503);
         $this->RegisterPropertyInteger('WallboxRemainingVariable', 56785);
         $this->RegisterPropertyInteger('RefreshSeconds', 30);
+        $this->RegisterPropertyInteger('ArchiveRefreshSeconds', 300);
         $this->RegisterVariableString('PVEnergyTile', 'PV Energiefluss', '~HTMLBox', 0);
         $this->RegisterTimer('Refresh', 0, 'PVFLOW_Update($_IPS[\'TARGET\']);');
     }
@@ -47,7 +48,7 @@ class PVEnergyFlow extends IPSModule
 
     private function StartUpdating()
     {
-        // Mindestens 10 Sekunden, damit Archivabfragen nicht unnötig oft laufen.
+        // Livewerte separat vom teureren Archivcache aktualisieren.
         $this->SetTimerInterval('Refresh', max(10, $this->ReadPropertyInteger('RefreshSeconds')) * 1000);
         $this->Update();
         $this->SetStatus(102);
@@ -57,6 +58,8 @@ class PVEnergyFlow extends IPSModule
     {
         $pvTileContext = [
             'parent' => $this->InstanceID,
+            'archiveInterval' => max(60, $this->ReadPropertyInteger('ArchiveRefreshSeconds')),
+            'archiveCache' => json_decode($this->GetBuffer('ArchiveCache'), true) ?: [],
             'ids' => [
                 'pv' => $this->ReadPropertyInteger('PVVariable'),
                 'battery' => $this->ReadPropertyInteger('BatteryVariable'),
@@ -77,9 +80,18 @@ class PVEnergyFlow extends IPSModule
         ];
         // Gemeinsamer Renderer; im Modulmodus wird kein Skripttimer angelegt.
         include dirname(__DIR__) . '/tile.php';
+        if ($archiveCache !== $pvTileContext['archiveCache']) {
+            $this->SetBuffer('ArchiveCache', json_encode($archiveCache, JSON_THROW_ON_ERROR));
+        }
         if (method_exists($this, 'UpdateVisualizationValue')) {
             $this->UpdateVisualizationValue($html);
         }
+    }
+
+    public function RefreshArchive()
+    {
+        $this->SetBuffer('ArchiveCache', '');
+        $this->Update();
     }
 
     public function GetVisualizationTile()

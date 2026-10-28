@@ -31,60 +31,35 @@ if (isset($pvTileContext)) {
 $archiveIDs = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
 $archive = $archiveIDs[0] ?? 0;
 $now = time();
-$data = ['updated' => $now, 'values' => []];
+require_once __DIR__ . '/PVEnergyFlow/ArchiveCache.php';
+$parent = isset($pvTileContext) ? $pvTileContext['parent'] : $_IPS['SELF'];
+$archiveInterval = isset($pvTileContext) ? ($pvTileContext['archiveInterval'] ?? 300) : 300;
+// Datum/Zeitzone, Quellen und Archivinstanz ändern die Bedeutung des Caches.
+$signature = hash('sha256', json_encode([1, $config, $archive, date('Y-m-d', $now), date_default_timezone_get()]));
+$cacheFile = sys_get_temp_dir() . '/pv-energy-archive-' . $parent . '.json';
+$previousCache = isset($pvTileContext) ? ($pvTileContext['archiveCache'] ?? []) : (is_file($cacheFile) ? json_decode(file_get_contents($cacheFile), true) : []);
+if (!is_array($previousCache)) $previousCache = [];
+$archiveCache = PVEnergyArchiveCache::remember($previousCache, $signature, $now, $archiveInterval,
+    static function () use ($config, $archive, $now) { return PVEnergyArchiveCache::read($config, $archive, $now); });
+if (!isset($pvTileContext) && $archiveCache !== $previousCache) {
+    file_put_contents($cacheFile, json_encode($archiveCache, JSON_THROW_ON_ERROR), LOCK_EX);
+    chmod($cacheFile, 0600);
+}
+$data = ['updated' => $now, 'archiveUpdated' => $archiveCache['updated'], 'values' => []];
 foreach ($config as $key => $item) {
     $entry = $item + ['value' => null, 'history' => [], 'archive' => false, 'error' => null];
     if (IPS_VariableExists($item['id'])) {
+        // Diese Abfragen laufen weiterhin bei JEDER Aktualisierung.
         $raw = GetValue($item['id']);
-        // Darstellung der Restzeit aus dem Symcon-Profil unverändert übernehmen.
         if ($key === 'remaining') $entry['display'] = GetValueFormatted($item['id']);
-        if (is_numeric($raw)) {
-            $entry['value'] = (float)$raw * $item['factor'];
-
-        }
-        if ($archive && ($item['chart'] ?? true)) {
-            try {
-                $entry['archive'] = AC_GetLoggingStatus($archive, $item['id']);
-                if ($entry['archive']) {
-                    if (($item['kind'] ?? '') === 'dailyCounter') {
-                        // Tageswerte des als Zähler archivierten Energiezählers.
-                        // Bei Standardaggregation wäre Avg ein Zählerstand-Mittelwert!
-                        $today = new DateTimeImmutable('today');
-                        $start = $today->modify('-6 days');
-                        $entry['days'] = [];
-                        for ($day = $start; $day <= $today; $day = $day->modify('+1 day')) {
-                            $entry['days'][] = ['day' => $day->format('Y-m-d'), 'label' => $day->format('d.m.'), 'today' => $day == $today];
-                        }
-                        if (AC_GetAggregationType($archive, $item['id']) !== 1) {
-                            $entry['error'] = 'Diese Variable muss im Archive Control als Zähler archiviert sein. Danach ggf. neu aggregieren.';
-                        } else {
-                            $rows = AC_GetAggregatedValues($archive, $item['id'], 1, $start->getTimestamp(), $now, 0);
-                            if (!is_array($rows)) throw new RuntimeException('Archivdaten fehlen');
-                            foreach ($rows as $row) $entry['history'][] = ['t' => $row['TimeStamp'], 'day' => date('Y-m-d', $row['TimeStamp']), 'v' => $row['Avg'] * $item['factor']];
-                        }
-                    } elseif (($item['kind'] ?? '') === 'counter') {
-                        // Zählerstände niemals als Leistungs-/Verbrauchsmittel darstellen.
-                        // Begrenztes Rohwertfenster, bei Erreichen der Grenze explizit markieren.
-                        $rows = AC_GetLoggedValues($archive, $item['id'], $now - 86400, $now, 2000);
-                        if (!is_array($rows)) throw new RuntimeException('Archivdaten fehlen');
-                        $entry['limited'] = count($rows) >= 2000;
-                        foreach ($rows as $row) $entry['history'][] = ['t' => $row['TimeStamp'], 'v' => $row['Value'] * $item['factor']];
-                    } else {
-                        $rows = AC_GetAggregatedValues($archive, $item['id'], 0, $now - 86400, $now, 0);
-                        if (!is_array($rows)) throw new RuntimeException('Archivdaten fehlen');
-                        foreach ($rows as $row) $entry['history'][] = ['t' => $row['TimeStamp'], 'v' => $row['Avg'] * $item['factor']];
-                    }
-                    usort($entry['history'], static function ($a, $b) { return $a['t'] <=> $b['t']; });
-                }
-            } catch (Throwable $e) { $entry['error'] = 'Archiv derzeit nicht lesbar'; }
-        }
+        if (is_numeric($raw)) $entry['value'] = (float)$raw * $item['factor'];
+        $entry = array_replace($entry, $archiveCache['values'][$key] ?? []);
     }
     $data['values'][$key] = $entry;
 }
 $template = file_get_contents(__DIR__ . '/PVEnergyFlow/assets/tile.html');
 $html = str_replace('/*__DATA__*/null', json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR), $template);
 // Ident innerhalb des ausführenden Symcon-Skripts: einmalig anlegen, danach aktualisieren.
-$parent = isset($pvTileContext) ? $pvTileContext['parent'] : $_IPS['SELF'];
 $box = @IPS_GetObjectIDByIdent('PVEnergyTile', $parent);
 if (!$box) {
     $box = IPS_CreateVariable(3);

@@ -15,3 +15,5 @@ jobs:
       - run: npm test
       - run: php -l tile.php
       - run: php -l PVEnergyFlow/module.php
+      - run: php -l PVEnergyFlow/ArchiveCache.php
+      - run: php PVEnergyFlow/tests/archive-cache.php

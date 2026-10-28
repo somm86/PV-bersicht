@@ -21,7 +21,7 @@ function render(overrides = {}) {
 }
 test('PHP source parses using PHP 8 grammar', () => {
   const parser = new PHPParser({parser:{version:'8.0',suppressErrors:false}});
-  for (const file of ['tile.php','PVEnergyFlow/module.php']) {
+  for (const file of ['tile.php','PVEnergyFlow/module.php','PVEnergyFlow/ArchiveCache.php','PVEnergyFlow/tests/archive-cache.php']) {
     assert.ok(parser.parseCode(fs.readFileSync(path.join(root,file),'utf8')), file);
   }
 });
@@ -85,7 +85,11 @@ test('Symcon library discovery and configuration reference an implemented module
   for(const element of form.elements.filter(e=>e.name)) {
     assert.ok(source.includes("RegisterPropertyInteger('"+element.name+"'"),element.name);
   }
-  for(const action of form.actions) assert.ok(action.onClick.startsWith(module.prefix+'_Update('));
+  for(const action of form.actions) {
+    const match=action.onClick.match(new RegExp('^'+module.prefix+'_([A-Za-z]+)\\('));
+    assert.ok(match,action.onClick);
+    assert.ok(source.includes('public function '+match[1]+'('),action.onClick);
+  }
   assert.ok(fs.existsSync(path.join(root,'PVEnergyFlow/assets/tile.html')));
 });
 
