@@ -111,12 +111,7 @@ for(const [bar,key] of [['batteryBar','soc'],['carBar','car']])document.getEleme
 const phases=value('phases');
 document.getElementById('evPhases').textContent='Ladephasen · '+(Number.isInteger(phases)&&phases>=0&&phases<=3?phases+'-phasig':'—');
 const remaining=value('remaining');
-function duration(seconds) {
- if(seconds==null||!Number.isFinite(seconds)||seconds<0)return '—';
- const minutes=Math.ceil(seconds/60);
- return minutes>=60?Math.floor(minutes/60)+' h '+minutes%60+' min':minutes+' min';
-}
-document.getElementById('evRemaining').textContent='Restladezeit · '+(v.remaining?.unitKnown===false?'Einheit offen':duration(remaining));
+document.getElementById('evRemaining').textContent='Restladezeit · '+(v.remaining?.display ?? (remaining==null?'—':String(remaining)));
 
 const balance=['pv','battery','grid','ev'].every(k=>value(k)!=null)?value('pv')+value('grid')-value('battery')-value('ev'):null;
 set('house','value',balance!=null&&balance>=-50?format(Math.max(0,balance)):'—');

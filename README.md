@@ -72,7 +72,9 @@ Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie räumlich
 
 ## Ladephasen und Restladezeit
 
-Der größere Wallbox-Bereich zeigt die aktive Phasenanzahl und die verbleibende Ladezeit aus zwei optionalen Variablen. Die bestätigten IDs sind **23503** für die Phasenanzahl (Integer 0, 1 oder 3) und **56785** für die Restladezeit. Sie sind als Vorgaben hinterlegt. Die Rohwerteinheit von 56785 ist noch unbekannt. In der Instanz **Aktive Ladephasen** (Zahl 0–3) und **Verbleibende Ladezeit** auswählen. Für die Restzeit kann die Rohwerteinheit Sekunden, Minuten oder Stunden gewählt werden (Standard: Einheit unbekannt). Die Einheit muss anhand eines Rohwertes und der dazugehörigen Restzeitanzeige der Wallbox bestätigt werden. Bei bestehenden Instanzen bleiben bereits gespeicherte IDs und Einheiten erhalten: die IDs ggf. manuell setzen und bis zur Bestätigung **Einheit unbekannt** wählen. Die Quelle muss eine numerische Dauer liefern, keinen Endzeitstempel oder Moduscode. Bei unbekannter Einheit erscheint „Einheit offen“, ohne passende Quelle „—“; es wird keine Restzeit aus Fahrzeugakku oder Ladeleistung geschätzt. Die Anzeigen sind nur Statusinformationen und öffnen keinen Graphen.
+Der größere Wallbox-Bereich zeigt die aktive Phasenanzahl und die verbleibende Ladezeit. Die bestätigten IDs sind **23503** für die Phasenanzahl (Integer 0, 1 oder 3) und **56785** für die Restladezeit. Sie sind als Vorgaben hinterlegt. In bestehenden Instanzen ggf. die IDs in **Aktive Ladephasen** und **Verbleibende Ladezeit** auswählen.
+
+Die Restladezeit wird mit `GetValueFormatted(56785)` direkt aus Symcon übernommen, einschließlich der vom Variablenprofil gelieferten Formatierung. Es gibt keine Umrechnung, Schätzung oder zusätzliche Einheit. Ohne Profil wird entsprechend der unveränderte Zahlenwert angezeigt; ohne Quelle „—“. Eine zuvor gespeicherte Einstellung zur Zeiteinheit wird nicht mehr verwendet. Phasen und Restzeit sind reine Statusanzeigen ohne Graph.
 
 ## Archiv und Aktualisierung
 

@@ -45,29 +45,6 @@
       "caption": "Verbleibende Ladezeit (Dauer; optional)"
     },
     {
-      "type": "Select",
-      "name": "RemainingTimeUnit",
-      "caption": "Rohwerteinheit der Restladezeit",
-      "options": [
-        {
-          "caption": "Einheit unbekannt (keine Umrechnung)",
-          "value": 0
-        },
-        {
-          "caption": "Sekunden",
-          "value": 1
-        },
-        {
-          "caption": "Minuten",
-          "value": 60
-        },
-        {
-          "caption": "Stunden",
-          "value": 3600
-        }
-      ]
-    },
-    {
       "type": "Label",
       "caption": "Zusatzwerte (optional; 0 = nicht zugeordnet)"
     },

@@ -165,22 +165,23 @@ test('counter resets split the curve and bounded data is clearly marked',()=>{
   assert.equal(d.querySelectorAll('#chart polyline').length,2);
   dom.window.close();
 });
-test('wallbox shows source phases and duration without estimating missing values',()=>{
-  let dom=render({phases:{value:3},remaining:{value:5400}}),d=dom.window.document;
+test('wallbox displays phases and unconverted source time',()=>{
+  let dom=render({phases:{value:3},remaining:{value:5400,display:'1 h 30 min'}}),d=dom.window.document;
   assert.equal(d.querySelector('#evPhases').textContent,'Ladephasen · 3-phasig');
   assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · 1 h 30 min');
   d.querySelector('#evRemaining').dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
   assert.equal(d.querySelector('dialog').open,false);
   dom.window.close();
-  dom=render({phases:{value:7},remaining:{value:-1}});d=dom.window.document;
+  dom=render({phases:{value:7},remaining:{value:null}});d=dom.window.document;
   assert.equal(d.querySelector('#evPhases').textContent,'Ladephasen · —');
   assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · —');
   dom.window.close();
 });
 
-test('unknown duration units do not present the raw integer as a time',()=>{
- const dom=render({phases:{value:1},remaining:{value:null,raw:5400,unitKnown:false}}),d=dom.window.document;
- assert.equal(d.querySelector('#evPhases').textContent,'Ladephasen · 1-phasig');
- assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · Einheit offen');
- dom.window.close();
+test('remaining time preserves formatted values and raw integers without adding units',()=>{
+ for(const [entry,expected] of [[{value:90},'90'],[{value:0,display:'Fertig'},'Fertig'],[{value:130,display:'01:30'},'01:30']]) {
+  const dom=render({remaining:entry}),d=dom.window.document;
+  assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · '+expected);
+  dom.window.close();
+ }
 });
