@@ -207,3 +207,26 @@ test('PV, grid and wallbox cards and connections respect their idle thresholds',
   }
  }
 });
+
+test('import and export daily counters show kWh bars and distinguish missing from zero',()=>{
+ for(const key of ['gridImport','gridExport']) {
+  const dom=render({[key]:{value:46133.19,label:key,unit:'kWh',kind:'dailyCounter',archive:true,days:[{day:'2026-10-26',label:'26.10.'},{day:'2026-10-27',label:'27.10.'},{day:'2026-10-28',label:'28.10.',today:true}],history:[{t:1,day:'2026-10-26',v:0},{t:2,day:'2026-10-28',v:12.75}]}}),d=dom.window.document;
+  d.querySelector('#'+key).dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+  assert.match(d.querySelector('#title').textContent,/Tageswerte \(kWh\)/);
+  assert.equal(d.querySelectorAll('.daily-bar').length,2);
+  assert.equal(d.querySelectorAll('#chart polyline').length,0);
+  assert.match(d.querySelector('#chart').textContent,/12,75/);
+  assert.match(d.querySelector('#chart').textContent,/28\.10\.\*/);
+  assert.match(d.querySelector('#chart').textContent,/—/);
+  assert.match(d.querySelector('#message').textContent,/Heute vorläufig/);
+  dom.window.close();
+ }
+});
+test('daily counters never plot unconfigured aggregation as consumption',()=>{
+ const dom=render({gridImport:{label:'Bezug',kind:'dailyCounter',archive:true,error:'Diese Variable muss im Archive Control als Zähler archiviert sein.',history:[],days:[]}}),d=dom.window.document;
+ d.querySelector('#gridImport').dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+ assert.match(d.querySelector('#message').textContent,/als Zähler/);
+ assert.equal(d.querySelector('#chart').style.display,'none');
+ assert.equal(d.querySelectorAll('.daily-bar').length,0);
+ dom.window.close();
+});

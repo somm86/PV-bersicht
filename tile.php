@@ -11,8 +11,8 @@ $config = [
     'soc'     => ['id' => 45769, 'factor' => 1, 'label' => 'Speicherstand', 'unit' => '%'],
     'car'     => ['id' => 48784, 'factor' => 1, 'label' => 'Fahrzeugakku', 'unit' => '%'],
     'pvTotal' => ['id' => 54550, 'factor' => 1, 'label' => 'PV-Erzeugung gesamt', 'unit' => 'kWh', 'kind' => 'counter'],
-    'gridImport' => ['id' => 30181, 'factor' => 1, 'label' => 'Netzbezug gesamt', 'unit' => 'kWh', 'kind' => 'counter'],
-    'gridExport' => ['id' => 29267, 'factor' => 1, 'label' => 'Netzeinspeisung gesamt', 'unit' => 'kWh', 'kind' => 'counter'],
+    'gridImport' => ['id' => 30181, 'factor' => 1, 'label' => 'Netzbezug gesamt', 'unit' => 'kWh', 'kind' => 'dailyCounter'],
+    'gridExport' => ['id' => 29267, 'factor' => 1, 'label' => 'Netzeinspeisung gesamt', 'unit' => 'kWh', 'kind' => 'dailyCounter'],
     'evSession' => ['id' => 17564, 'factor' => 1, 'label' => 'Wallbox Ladezyklus', 'unit' => 'kWh', 'kind' => 'counter'],
     'pvToday' => ['id' => 0, 'factor' => 1, 'label' => 'PV heute', 'unit' => 'kWh', 'kind' => 'counter'],
     'importToday' => ['id' => 0, 'factor' => 1, 'label' => 'Netzbezug heute', 'unit' => 'kWh', 'kind' => 'counter'],
@@ -46,7 +46,23 @@ foreach ($config as $key => $item) {
             try {
                 $entry['archive'] = AC_GetLoggingStatus($archive, $item['id']);
                 if ($entry['archive']) {
-                    if (($item['kind'] ?? '') === 'counter') {
+                    if (($item['kind'] ?? '') === 'dailyCounter') {
+                        // Tageswerte des als Zähler archivierten Energiezählers.
+                        // Bei Standardaggregation wäre Avg ein Zählerstand-Mittelwert!
+                        $today = new DateTimeImmutable('today');
+                        $start = $today->modify('-6 days');
+                        $entry['days'] = [];
+                        for ($day = $start; $day <= $today; $day = $day->modify('+1 day')) {
+                            $entry['days'][] = ['day' => $day->format('Y-m-d'), 'label' => $day->format('d.m.'), 'today' => $day == $today];
+                        }
+                        if (AC_GetAggregationType($archive, $item['id']) !== 1) {
+                            $entry['error'] = 'Diese Variable muss im Archive Control als Zähler archiviert sein. Danach ggf. neu aggregieren.';
+                        } else {
+                            $rows = AC_GetAggregatedValues($archive, $item['id'], 1, $start->getTimestamp(), $now, 0);
+                            if (!is_array($rows)) throw new RuntimeException('Archivdaten fehlen');
+                            foreach ($rows as $row) $entry['history'][] = ['t' => $row['TimeStamp'], 'day' => date('Y-m-d', $row['TimeStamp']), 'v' => $row['Avg'] * $item['factor']];
+                        }
+                    } elseif (($item['kind'] ?? '') === 'counter') {
                         // Zählerstände niemals als Leistungs-/Verbrauchsmittel darstellen.
                         // Begrenztes Rohwertfenster, bei Erreichen der Grenze explizit markieren.
                         $rows = AC_GetLoggedValues($archive, $item['id'], $now - 86400, $now, 2000);

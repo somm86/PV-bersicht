@@ -128,8 +128,42 @@ if(balance!=null&&balance< -50)document.getElementById('foot').textContent='Bila
 line('pv',value('pv'),false,'#f4cd62');line('battery',value('battery'),value('battery')>0,'#5cddc4');line('grid',value('grid'),value('grid')<0,'#80baff');line('ev',value('ev'),false,'#c6a0ff');
 document.getElementById('updated').textContent=data?'Stand '+new Date(data.updated*1000).toLocaleTimeString('de-DE'):'Keine Daten';
 const modal=document.querySelector('dialog');document.getElementById('close').onclick=()=>modal.close();
+function dailyCounterChart(entry) {
+ const svg=document.getElementById('chart');svg.replaceChildren();
+ const rows=(entry.history||[]).filter(p=>Number.isFinite(p.v)&&p.v>=0);
+ const days=entry.days||[];
+ const byDay=new Map(rows.map(p=>[p.day,p.v]));
+ const available=days.filter(d=>byDay.has(d.day));
+ document.getElementById('title').textContent=entry.label+' · Tageswerte (kWh)';
+ document.getElementById('message').textContent=entry.error||(!entry.archive?'Archivierung nicht aktiv':!available.length?'Keine Tageswerte im Archiv vorhanden':'Letzte 7 Kalendertage · Heute vorläufig · Fehlende Tage als — · Zählerstand aktuell: '+format(entry.value,'kWh'));
+ document.getElementById('extra').replaceChildren();
+ svg.setAttribute('aria-label','Tägliche Energie in kWh, letzte sieben Kalendertage');
+ svg.style.display=!entry.error&&available.length?'block':'none';
+ if(!entry.error&&available.length){
+  const ns='http://www.w3.org/2000/svg';
+  function add(tag,attrs,text,parent=svg){const e=document.createElementNS(ns,tag);for(const [a,b]of Object.entries(attrs))e.setAttribute(a,b);if(text)e.textContent=text;parent.append(e);return e;}
+  const max=Math.max(1,...available.map(d=>byDay.get(d.day))),step=550/Math.max(1,days.length);
+  add('line',{x1:55,y1:180,x2:620,y2:180});
+  for(const fraction of [0,.5,1]){
+   const y=180-fraction*140;
+   if(fraction)add('line',{x1:55,y1:y,x2:620,y2:y,opacity:.2});
+   add('text',{x:30,y:y+4},(fraction*max).toLocaleString('de-DE',{maximumFractionDigits:1}));
+  }
+  days.forEach((day,i)=>{
+   const x=62+i*step,center=x+step*.4;
+   add('text',{x:center,y:208},day.label+(day.today?'*':''));
+   if(!byDay.has(day.day)){add('text',{x:center,y:167},'—');return;}
+   const amount=byDay.get(day.day),height=amount/max*140;
+   const bar=add('rect',{class:'daily-bar',x:x+4,y:180-height,width:step*.8-8,height,rx:4,fill:day.today?'#84bfff':'#5cddc4'});
+   add('title',{},day.label+(day.today?' (heute, vorläufig)':'')+': '+format(amount,'kWh'),bar);
+   add('text',{class:'daily-value',x:center,y:Math.max(17,174-height)},amount.toLocaleString('de-DE',{maximumFractionDigits:2}));
+  });
+ }
+ if(!modal.open)modal.showModal();
+}
 function chart(k) {
  const entry=v[k];if(!entry)return;
+ if(entry.kind==='dailyCounter'){dailyCounterChart(entry);return;}
  const counter=entry.kind==='counter'||entry.unit==='kWh';
  const rows=(entry.history||[]).filter(p=>Number.isFinite(p.v)&&Number.isFinite(p.t)).slice().sort((a,b)=>a.t-b.t);
  const reset=counter&&rows.some((p,i)=>i>0&&p.v<rows[i-1].v);
