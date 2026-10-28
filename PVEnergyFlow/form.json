@@ -2,7 +2,7 @@
   "elements": [
     {
       "type": "Label",
-      "caption": "PV Energiefluss: Quellen wählen, Änderungen übernehmen und die Instanz in die Kachel Visu aufnehmen. HTMLBox bleibt für IPSView verfügbar."
+      "caption": "PV-Übersicht: Quellen wählen, Änderungen übernehmen und die Instanz in die Kachel Visu aufnehmen. HTMLBox bleibt für IPSView verfügbar."
     },
     {
       "type": "SelectVariable",

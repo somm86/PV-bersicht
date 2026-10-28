@@ -1,20 +1,22 @@
-# PV Energiefluss für IP-Symcon
+# PV-Übersicht für IP-Symcon
 
 Responsive HTMLBox mit animierten Leistungsflüssen und eingebettetem Archivdiagramm (24 Stunden, Stundenmittel). Keine externen Bibliotheken, Webhooks oder Zugangsdaten. Die Flüsse zeigen die Richtung zwischen Komponenten und dem Hausbus, keine nachgewiesene Zuordnung einzelner Energiequellen zu Verbrauchern.
 
 ## Installation als Symcon-Modul (empfohlen)
 
-Voraussetzung: IP-Symcon ab 7.0. Dieses Repository enthält jetzt eine `library.json` und das Modul **PV Energiefluss**.
+Voraussetzung: IP-Symcon ab 7.0. Dieses Repository enthält jetzt eine `library.json` und das Modul **PV-Übersicht**.
 
 1. In der Symcon-Modulverwaltung das Repository `https://github.com/somm86/PV-bersicht.git` hinzufügen bzw. den vorhandenen Eintrag aktualisieren. Als Branch **main** auswählen.
-2. Eine neue Instanz **PV Energiefluss** anlegen.
+2. Eine neue Instanz **PV-Übersicht** anlegen.
 3. In der Instanzkonfiguration die Leistungs- und Ladestandsvariablen auswählen. Die IDs aus den Screenshots sind voreingestellt. Zusätzlich können weitere Detailwerte zugeordnet werden (0 = nicht zugeordnet). PV, Speicher und Netz müssen W liefern; die Wallbox kW. Netz positiv = Bezug, Speicher positiv = Laden.
 4. Änderungen übernehmen. Unter der Instanz wird die HTMLBox-Variable **PV Energiefluss** erstellt und regelmäßig aktualisiert. Mit **Jetzt aktualisieren** lässt sie sich sofort erneuern.
-5. Für die native PHP/HTML-Kachel in der Kachel Visu die **Instanz „PV Energiefluss“ selbst** in die Visualisierung aufnehmen. Das Modul stellt die HTML-Ausgabe über `GetVisualizationTile()` bereit und aktualisiert sie über `UpdateVisualizationValue()`. Für IPSView bleibt alternativ die darunterliegende HTMLBox-Variable verfügbar. Es müssen keine Dateien manuell in das Skriptverzeichnis kopiert werden.
+5. Für die native PHP/HTML-Kachel in der Kachel Visu die **Instanz „PV-Übersicht“ selbst** in die Visualisierung aufnehmen. Das Modul stellt die HTML-Ausgabe über `GetVisualizationTile()` bereit und aktualisiert sie über `UpdateVisualizationValue()`. Für IPSView bleibt alternativ die darunterliegende HTMLBox-Variable verfügbar. Es müssen keine Dateien manuell in das Skriptverzeichnis kopiert werden.
 
 Die native Darstellung setzt eine Symcon-Version mit HTML-Instanzvisualisierung (`SetVisualizationType`) voraus. Nach dem Modulupdate die Instanzkonfiguration einmal übernehmen. Falls die Instanz auf deiner Version nicht als Kachel angeboten wird, Symcon-Version nennen; bis dahin die HTMLBox verwenden. Die native API-Anbindung ist lokal geprüft, ihre Darstellung auf dem Zielsystem noch nicht.
 
 Wenn bereits die Skriptversion läuft, deren Skripttimer auf 0 setzen und die neue HTMLBox verwenden, um doppelte Aktualisierungen zu vermeiden. Die Modulinstallation wurde hier anhand der Metadaten und PHP-Syntax geprüft; der Test in einer echten Symcon-Laufzeit steht noch aus.
+
+Bereits vorhandene Instanzen behalten ihren bisherigen Objektnamen. Dieser kann in der Symcon-Konsole bei Bedarf auf „PV-Übersicht“ umbenannt werden; interne IDs und Funktionen bleiben unverändert.
 
 ## Alternative: Installation als Skript
 

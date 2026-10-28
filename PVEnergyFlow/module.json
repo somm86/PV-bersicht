@@ -3,7 +3,9 @@
   "name": "PVEnergyFlow",
   "type": 3,
   "vendor": "",
-  "aliases": ["PV Energiefluss"],
+  "aliases": [
+    "PV-Übersicht"
+  ],
   "parentRequirements": [],
   "childRequirements": [],
   "implemented": [],
