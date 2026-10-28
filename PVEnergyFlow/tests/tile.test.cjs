@@ -242,3 +242,12 @@ test('battery card hides only when both SOC and battery power are exactly zero',
   dom.window.close();
  }
 });
+
+test('native SVG flow animations respect direction and visible-power thresholds',()=>{
+ for(const [key,power,values] of [['pv',1,'0;-40'],['pv',.99,null],['grid',11,'0;-40'],['grid',-11,'0;40'],['grid',10,null],['ev',100,'0;-40'],['ev',99,null],['battery',1,'0;40'],['battery',-1,'0;-40'],['battery',0,null]]) {
+  const dom=render({[key]:{value:power}}),motion=dom.window.document.querySelector('#'+key+'Line animate');
+  if(values){assert.ok(motion,key+' '+power);assert.equal(motion.getAttribute('values'),values);assert.equal(motion.getAttribute('repeatCount'),'indefinite');}
+  else assert.equal(motion,null,key+' '+power);
+  dom.window.close();
+ }
+});
