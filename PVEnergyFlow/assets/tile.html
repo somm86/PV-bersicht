@@ -98,7 +98,7 @@ const set=(k,cls,t)=>document.querySelector('#'+k+' .'+cls).textContent=t;
 function line(k,power,reverse,color){const el=document.getElementById(k+'Line');el.setAttribute('class',power!=null&&Math.abs(power)>30?'active'+(reverse?' reverse':''):'');el.style.color=color;el.style.stroke=power!=null&&Math.abs(power)>30?color:'none';}
 for(const k of ['pv','battery','grid','ev'])set(k,'value',format(value(k)));
 // Fehlende Messwerte bleiben als unbekannt sichtbar, statt als Null zu gelten.
-const hidePV=value('pv')!=null&&value('pv')<=5;
+const hidePV=value('pv')!=null&&value('pv')<1;
 const hideGrid=value('grid')!=null&&value('grid')>=-10&&value('grid')<=10;
 for(const [key,hidden] of [['pv',hidePV],['grid',hideGrid]]) {
  for(const id of [key,key+'Wire',key+'Line',key+'Port'])document.getElementById(id).style.display=hidden?'none':'';
