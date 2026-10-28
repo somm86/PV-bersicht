@@ -18,9 +18,9 @@ class PVEnergyFlow extends IPSModule
         $this->RegisterPropertyInteger('PVTodayVariable', 0);
         $this->RegisterPropertyInteger('GridImportTodayVariable', 0);
         $this->RegisterPropertyInteger('GridExportTodayVariable', 0);
-        $this->RegisterPropertyInteger('WallboxPhasesVariable', 0);
-        $this->RegisterPropertyInteger('WallboxRemainingVariable', 0);
-        $this->RegisterPropertyInteger('RemainingTimeUnit', 60);
+        $this->RegisterPropertyInteger('WallboxPhasesVariable', 23503);
+        $this->RegisterPropertyInteger('WallboxRemainingVariable', 56785);
+        $this->RegisterPropertyInteger('RemainingTimeUnit', 0);
         $this->RegisterPropertyInteger('RefreshSeconds', 30);
         $this->RegisterVariableString('PVEnergyTile', 'PV Energiefluss', '~HTMLBox', 0);
         $this->RegisterTimer('Refresh', 0, 'PVFLOW_Update($_IPS[\'TARGET\']);');
@@ -58,7 +58,7 @@ class PVEnergyFlow extends IPSModule
     {
         $pvTileContext = [
             'parent' => $this->InstanceID,
-            'remainingFactor' => in_array($this->ReadPropertyInteger('RemainingTimeUnit'), [1, 60, 3600], true) ? $this->ReadPropertyInteger('RemainingTimeUnit') : 60,
+            'remainingFactor' => in_array($this->ReadPropertyInteger('RemainingTimeUnit'), [0, 1, 60, 3600], true) ? $this->ReadPropertyInteger('RemainingTimeUnit') : 0,
             'ids' => [
                 'pv' => $this->ReadPropertyInteger('PVVariable'),
                 'battery' => $this->ReadPropertyInteger('BatteryVariable'),

@@ -17,12 +17,12 @@ $config = [
     'pvToday' => ['id' => 0, 'factor' => 1, 'label' => 'PV heute', 'unit' => 'kWh', 'kind' => 'counter'],
     'importToday' => ['id' => 0, 'factor' => 1, 'label' => 'Netzbezug heute', 'unit' => 'kWh', 'kind' => 'counter'],
     'exportToday' => ['id' => 0, 'factor' => 1, 'label' => 'Einspeisung heute', 'unit' => 'kWh', 'kind' => 'counter'],
-    'phases' => ['id' => 0, 'factor' => 1, 'label' => 'Ladephasen', 'unit' => '', 'chart' => false],
-    'remaining' => ['id' => 0, 'factor' => 60, 'label' => 'Restladezeit', 'unit' => 's', 'chart' => false],
+    'phases' => ['id' => 23503, 'factor' => 1, 'label' => 'Ladephasen', 'unit' => '', 'chart' => false],
+    'remaining' => ['id' => 56785, 'factor' => 0, 'label' => 'Restladezeit', 'unit' => 's', 'chart' => false],
 ];
 // Die Modulinstanz kann IDs übergeben; der direkte Skriptbetrieb bleibt verfügbar.
 if (isset($pvTileContext)) {
-    $config['remaining']['factor'] = $pvTileContext['remainingFactor'] ?? 60;
+    $config['remaining']['factor'] = $pvTileContext['remainingFactor'] ?? 0;
     foreach ($pvTileContext['ids'] as $key => $id) {
         $config[$key]['id'] = $id;
     }
@@ -37,7 +37,14 @@ foreach ($config as $key => $item) {
     $entry = $item + ['value' => null, 'history' => [], 'archive' => false, 'error' => null];
     if (IPS_VariableExists($item['id'])) {
         $raw = GetValue($item['id']);
-        if (is_numeric($raw)) $entry['value'] = (float)$raw * $item['factor'];
+        if (is_numeric($raw)) {
+            $entry['value'] = (float)$raw * $item['factor'];
+            if ($key === 'remaining') {
+                $entry['raw'] = (float)$raw;
+                $entry['unitKnown'] = (float)$item['factor'] !== 0.0;
+                if (!$entry['unitKnown']) $entry['value'] = null;
+            }
+        }
         if ($archive && ($item['chart'] ?? true)) {
             try {
                 $entry['archive'] = AC_GetLoggingStatus($archive, $item['id']);

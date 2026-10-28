@@ -116,7 +116,7 @@ function duration(seconds) {
  const minutes=Math.ceil(seconds/60);
  return minutes>=60?Math.floor(minutes/60)+' h '+minutes%60+' min':minutes+' min';
 }
-document.getElementById('evRemaining').textContent='Restladezeit · '+duration(remaining);
+document.getElementById('evRemaining').textContent='Restladezeit · '+(v.remaining?.unitKnown===false?'Einheit offen':duration(remaining));
 
 const balance=['pv','battery','grid','ev'].every(k=>value(k)!=null)?value('pv')+value('grid')-value('battery')-value('ev'):null;
 set('house','value',balance!=null&&balance>=-50?format(Math.max(0,balance)):'—');

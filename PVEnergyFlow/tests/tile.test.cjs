@@ -177,3 +177,10 @@ test('wallbox shows source phases and duration without estimating missing values
   assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · —');
   dom.window.close();
 });
+
+test('unknown duration units do not present the raw integer as a time',()=>{
+ const dom=render({phases:{value:1},remaining:{value:null,raw:5400,unitKnown:false}}),d=dom.window.document;
+ assert.equal(d.querySelector('#evPhases').textContent,'Ladephasen · 1-phasig');
+ assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · Einheit offen');
+ dom.window.close();
+});

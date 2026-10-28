@@ -72,7 +72,7 @@ Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie räumlich
 
 ## Ladephasen und Restladezeit
 
-Der größere Wallbox-Bereich zeigt die aktive Phasenanzahl und die verbleibende Ladezeit aus zwei optionalen Variablen. Beide IDs sind zunächst 0, da sie auf den Screenshots nicht angegeben sind. In der Instanz **Aktive Ladephasen** (Zahl 0–3) und **Verbleibende Ladezeit** auswählen. Für die Restzeit kann die Rohwerteinheit Sekunden, Minuten oder Stunden gewählt werden (Standard: Minuten). Die Quelle muss eine numerische Dauer liefern, keinen Endzeitstempel oder Moduscode. Ohne passende Quelle erscheint „—“; es wird keine Restzeit aus Fahrzeugakku oder Ladeleistung geschätzt. Die Anzeigen sind nur Statusinformationen und öffnen keinen Graphen.
+Der größere Wallbox-Bereich zeigt die aktive Phasenanzahl und die verbleibende Ladezeit aus zwei optionalen Variablen. Die bestätigten IDs sind **23503** für die Phasenanzahl (Integer 0, 1 oder 3) und **56785** für die Restladezeit. Sie sind als Vorgaben hinterlegt. Die Rohwerteinheit von 56785 ist noch unbekannt. In der Instanz **Aktive Ladephasen** (Zahl 0–3) und **Verbleibende Ladezeit** auswählen. Für die Restzeit kann die Rohwerteinheit Sekunden, Minuten oder Stunden gewählt werden (Standard: Einheit unbekannt). Die Einheit muss anhand eines Rohwertes und der dazugehörigen Restzeitanzeige der Wallbox bestätigt werden. Bei bestehenden Instanzen bleiben bereits gespeicherte IDs und Einheiten erhalten: die IDs ggf. manuell setzen und bis zur Bestätigung **Einheit unbekannt** wählen. Die Quelle muss eine numerische Dauer liefern, keinen Endzeitstempel oder Moduscode. Bei unbekannter Einheit erscheint „Einheit offen“, ohne passende Quelle „—“; es wird keine Restzeit aus Fahrzeugakku oder Ladeleistung geschätzt. Die Anzeigen sind nur Statusinformationen und öffnen keinen Graphen.
 
 ## Archiv und Aktualisierung
 
@@ -89,7 +89,7 @@ npm ci
 npm test
 ```
 
-Sechzehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
+Siebzehn automatisierte Prüfungen bestanden (einschließlich Modulmetadaten, Konfigurationszuordnung und Prüfung der Modulordnerstruktur): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
 
 Optional mit lokal installiertem PHP und Chromium:
 

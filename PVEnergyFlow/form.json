@@ -50,6 +50,10 @@
       "caption": "Rohwerteinheit der Restladezeit",
       "options": [
         {
+          "caption": "Einheit unbekannt (keine Umrechnung)",
+          "value": 0
+        },
+        {
           "caption": "Sekunden",
           "value": 1
         },
