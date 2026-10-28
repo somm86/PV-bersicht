@@ -68,7 +68,7 @@ Die PV-Quelle 22209 („mit Speicherberücksichtigung“) liefert laut Bestätig
 
 ## Darstellung
 
-Dunkle Verlaufskarten, eigene SVG-Symbole für Solarmodule, Batterie, Haus, Strommast und Wallbox mit Fahrzeug sowie animierte Leitungen zeigen die Anlage. Die zentrale Hauskarte zeigt ein Haussymbol und den berechneten Leistungswert ohne Textbeschriftung; die Berechnung bleibt unverändert. Speicher- und Fahrzeugladestand erscheinen zusätzlich als Balken. PV-Gesamterzeugung, Speichertemperatur, Netzenergiezähler und Energie im Wallbox-Ladezyklus ergänzen die Leistungswerte. Es handelt sich bei den Gesamtwerten ausdrücklich nicht um Tageswerte. Detailwerte sind separat für den Archivverlauf anklickbar; nicht zugeordnete Werte erscheinen als „—“.
+Dunkle Verlaufskarten mit Lichtkanten, Farbakzenten und Schatten sowie detaillierte, mehrschichtige SVG-Symbole für Solarmodule, Batterie, Haus, Strommast und Wallbox mit Fahrzeug sowie animierte Leitungen zeigen die Anlage. Die zentrale Hauskarte ist ohne umlaufende Kreise gestaltet und zeigt ein Haussymbol und den berechneten Leistungswert ohne Textbeschriftung; die Berechnung bleibt unverändert. Speicher- und Fahrzeugladestand erscheinen zusätzlich als Balken. PV-Gesamterzeugung, Speichertemperatur, Netzenergiezähler und Energie im Wallbox-Ladezyklus ergänzen die Leistungswerte. Es handelt sich bei den Gesamtwerten ausdrücklich nicht um Tageswerte. Detailwerte sind separat für den Archivverlauf anklickbar; nicht zugeordnete Werte erscheinen als „—“.
 
 ## Archiv und Aktualisierung
 
