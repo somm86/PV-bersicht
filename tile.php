@@ -10,6 +10,11 @@ $config = [
     'ev'      => ['id' => 31735, 'factor' => 1000, 'label' => 'Wallbox', 'unit' => 'W'],
     'soc'     => ['id' => 45769, 'factor' => 1, 'label' => 'Speicherstand', 'unit' => '%'],
     'car'     => ['id' => 48784, 'factor' => 1, 'label' => 'Fahrzeugakku', 'unit' => '%'],
+    'pvTotal' => ['id' => 54550, 'factor' => 1, 'label' => 'PV-Erzeugung gesamt', 'unit' => 'kWh'],
+    'temperature' => ['id' => 22147, 'factor' => 1, 'label' => 'Speichertemperatur', 'unit' => '°C'],
+    'gridImport' => ['id' => 30181, 'factor' => 1, 'label' => 'Netzbezug gesamt', 'unit' => 'kWh'],
+    'gridExport' => ['id' => 29267, 'factor' => 1, 'label' => 'Netzeinspeisung gesamt', 'unit' => 'kWh'],
+    'evSession' => ['id' => 17564, 'factor' => 1, 'label' => 'Wallbox Ladezyklus', 'unit' => 'kWh'],
 ];
 // Die Modulinstanz kann IDs übergeben; der direkte Skriptbetrieb bleibt verfügbar.
 if (isset($pvTileContext)) {

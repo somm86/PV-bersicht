@@ -108,3 +108,22 @@ test('native tile callback updates its isolated frame',()=>{
   assert.equal(frame.srcdoc,'<html><body>Aktualisiert</body></html>');
   dom.window.close();
 });
+
+test('detail values use their units and open their own archive',()=>{
+  const dom=render({pvTotal:{value:40377.7,label:'PV-Erzeugung gesamt',unit:'kWh',archive:true,history:[{t:1700000000,v:40377.7}]},temperature:{value:27.9,label:'Speichertemperatur',unit:'°C',archive:false}}),d=dom.window.document;
+  assert.match(d.querySelector('#pvTotal').textContent,/40\.377,7 kWh/);
+  assert.match(d.querySelector('#temperature').textContent,/27,9 °C/);
+  d.querySelector('#pvTotal').dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+  assert.equal(d.querySelector('#title').textContent,'PV-Erzeugung gesamt · letzte 24 Stunden (kWh)');
+  assert.equal(d.querySelectorAll('#chart circle').length,1);
+  assert.equal(d.querySelector('#house').textContent.trim(),'2,5 kW');
+  dom.window.close();
+});
+test('charge bars reflect SOC and clamp invalid percentages; missing details stay empty',()=>{
+  const dom=render({soc:{value:150},car:{value:-10}}),d=dom.window.document;
+  assert.equal(d.querySelector('#batteryBar').getAttribute('width'),'170');
+  assert.equal(d.querySelector('#carBar').getAttribute('width'),'0');
+  assert.equal(d.querySelector('#evSession').textContent,'Ladezyklus · —');
+  assert.equal(d.querySelectorAll('symbol').length,5);
+  dom.window.close();
+});

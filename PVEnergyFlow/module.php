@@ -11,6 +11,11 @@ class PVEnergyFlow extends IPSModule
         $this->RegisterPropertyInteger('WallboxVariable', 31735);
         $this->RegisterPropertyInteger('BatterySOCVariable', 45769);
         $this->RegisterPropertyInteger('CarSOCVariable', 48784);
+        $this->RegisterPropertyInteger('PVTotalVariable', 54550);
+        $this->RegisterPropertyInteger('BatteryTemperatureVariable', 22147);
+        $this->RegisterPropertyInteger('GridImportVariable', 30181);
+        $this->RegisterPropertyInteger('GridExportVariable', 29267);
+        $this->RegisterPropertyInteger('WallboxSessionVariable', 17564);
         $this->RegisterPropertyInteger('RefreshSeconds', 30);
         $this->RegisterVariableString('PVEnergyTile', 'PV Energiefluss', '~HTMLBox', 0);
         $this->RegisterTimer('Refresh', 0, 'PVFLOW_Update($_IPS[\'TARGET\']);');
@@ -55,6 +60,11 @@ class PVEnergyFlow extends IPSModule
                 'ev' => $this->ReadPropertyInteger('WallboxVariable'),
                 'soc' => $this->ReadPropertyInteger('BatterySOCVariable'),
                 'car' => $this->ReadPropertyInteger('CarSOCVariable'),
+                'pvTotal' => $this->ReadPropertyInteger('PVTotalVariable'),
+                'temperature' => $this->ReadPropertyInteger('BatteryTemperatureVariable'),
+                'gridImport' => $this->ReadPropertyInteger('GridImportVariable'),
+                'gridExport' => $this->ReadPropertyInteger('GridExportVariable'),
+                'evSession' => $this->ReadPropertyInteger('WallboxSessionVariable'),
             ],
         ];
         // Gemeinsamer Renderer; im Modulmodus wird kein Skripttimer angelegt.

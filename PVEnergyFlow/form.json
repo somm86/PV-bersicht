@@ -1,15 +1,80 @@
 {
   "elements": [
-    {"type":"Label","caption":"PV Energiefluss: Quellen wählen, Änderungen übernehmen und die HTMLBox-Variable in die Visualisierung aufnehmen."},
-    {"type":"SelectVariable","name":"PVVariable","caption":"PV-Erzeugung (W)"},
-    {"type":"SelectVariable","name":"BatteryVariable","caption":"Speicherleistung (W; positiv = Laden)"},
-    {"type":"SelectVariable","name":"GridVariable","caption":"Netzleistung (W; positiv = Bezug)"},
-    {"type":"SelectVariable","name":"WallboxVariable","caption":"Wallbox-Leistung (kW)"},
-    {"type":"SelectVariable","name":"BatterySOCVariable","caption":"Speicherstand (%)"},
-    {"type":"SelectVariable","name":"CarSOCVariable","caption":"Fahrzeugakku (%)"},
-    {"type":"NumberSpinner","name":"RefreshSeconds","caption":"Aktualisierung in Sekunden (mindestens 10)","minimum":10}
+    {
+      "type": "Label",
+      "caption": "PV Energiefluss: Quellen wählen, Änderungen übernehmen und die Instanz in die Kachel Visu aufnehmen. HTMLBox bleibt für IPSView verfügbar."
+    },
+    {
+      "type": "SelectVariable",
+      "name": "PVVariable",
+      "caption": "PV-Erzeugung (W)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "BatteryVariable",
+      "caption": "Speicherleistung (W; positiv = Laden)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "GridVariable",
+      "caption": "Netzleistung (W; positiv = Bezug)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "WallboxVariable",
+      "caption": "Wallbox-Leistung (kW)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "BatterySOCVariable",
+      "caption": "Speicherstand (%)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "CarSOCVariable",
+      "caption": "Fahrzeugakku (%)"
+    },
+    {
+      "type": "Label",
+      "caption": "Zusatzwerte (optional; 0 = nicht zugeordnet)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "PVTotalVariable",
+      "caption": "PV-Erzeugung gesamt (kWh)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "BatteryTemperatureVariable",
+      "caption": "Speichertemperatur (°C)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "GridImportVariable",
+      "caption": "Netzbezug gesamt (kWh)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "GridExportVariable",
+      "caption": "Netzeinspeisung gesamt (kWh)"
+    },
+    {
+      "type": "SelectVariable",
+      "name": "WallboxSessionVariable",
+      "caption": "Wallbox Ladezyklus (kWh)"
+    },
+    {
+      "type": "NumberSpinner",
+      "name": "RefreshSeconds",
+      "caption": "Aktualisierung in Sekunden (mindestens 10)",
+      "minimum": 10
+    }
   ],
   "actions": [
-    {"type":"Button","caption":"Jetzt aktualisieren","onClick":"PVFLOW_Update($id);"}
+    {
+      "type": "Button",
+      "caption": "Jetzt aktualisieren",
+      "onClick": "PVFLOW_Update($id);"
+    }
   ]
 }

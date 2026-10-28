@@ -3,8 +3,10 @@
   "author": "somm86",
   "name": "PV Energiefluss",
   "url": "https://github.com/somm86/PV-bersicht",
-  "compatibility": { "version": "7.0" },
-  "version": "1.0",
-  "build": 3,
+  "compatibility": {
+    "version": "7.0"
+  },
+  "version": "1.1",
+  "build": 4,
   "date": 1793145600
 }
