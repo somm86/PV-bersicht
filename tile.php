@@ -1,5 +1,5 @@
 <?php
-/** In Symcon: include IPS_GetKernelDir() . 'scripts/PV-bersicht/tile.php'; */
+/** In Symcon: include __DIR__ . '/PV-bersicht/tile.php'; */
 $config = [
     // Faktoren beziehen sich auf den ROHEN Variablenwert, nicht auf die Profilanzeige.
     // Quellen, Leistungsrichtungen und Rohwerteinheiten vom Nutzer bestätigt:

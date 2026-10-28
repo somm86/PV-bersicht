@@ -4,17 +4,32 @@ Responsive HTMLBox mit animierten Leistungsflüssen und eingebettetem Archivdiag
 
 ## Installation
 
-1. `tile.php` und den Ordner `assets` nach `<Symcon-Kernelverzeichnis>/scripts/PV-bersicht/` kopieren. Die Dateien gehören auf den Symcon-Server, nicht in den Browser.
+1. [ZIP von `main` herunterladen](https://github.com/somm86/PV-bersicht/archive/refs/heads/main.zip), entpacken und den Ordner `PV-bersicht-main` in `PV-bersicht` umbenennen. Diesen Ordner in das Verzeichnis kopieren, in dem die Symcon-Skripte (`*.ips.php`) liegen. Auf dem hier verwendeten System ist das `/mnt/data/symcon/scripts/`. Die Dateien gehören auf den Symcon-Server. Bei Docker das entsprechende eingebundene Datenverzeichnis verwenden.
 2. Ein **neues, ausschließlich dafür verwendetes PHP-Skript** in Symcon anlegen und folgenden Inhalt eintragen:
 
    ```php
    <?php
-   include IPS_GetKernelDir() . 'scripts/PV-bersicht/tile.php';
+   include __DIR__ . '/PV-bersicht/tile.php';
    ```
 
 3. In `tile.php` die Variablenzuordnung und Faktoren prüfen. Anschließend das neue Skript einmal ausführen. Es erstellt darunter die Stringvariable „PV Energiefluss“ mit Profil `~HTMLBox` und aktiviert seinen 30-Sekunden-Timer. Zum Abschalten den Skripttimer auf 0 setzen.
 4. Die HTMLBox-Variable in die Kachelvisualisierung aufnehmen. Breite und Höhe in der Visualisierung einstellen; empfohlen mindestens 320 × 300 px. Das SVG passt sich beiden Abmessungen an und behält die Proportionen bei. Große oder schmale Kacheln erhalten freie Ränder, damit Beschriftungen lesbar bleiben.
 5. Für IPSView dieselbe Variable als HTMLBox verwenden, sofern die eingesetzte IPSView-Version HTMLBox mit iframe/srcdoc und JavaScript unterstützt. Diese Unterstützung muss auf dem Zielclient geprüft werden; eine native IPSView-Komponente ist dies nicht.
+
+## Wenn die Datei nicht gefunden wird
+
+Die Einrichtung ist ein PHP-Skript mit HTMLBox, kein Modul für die Symcon-Modulverwaltung. Die Dateien werden durch `include` nicht heruntergeladen. Der folgende Aufbau muss auf dem Server vorhanden sein:
+
+```text
+/mnt/data/symcon/scripts/
+├── 32867.ips.php             # das in Symcon angelegte aufrufende Skript
+└── PV-bersicht/
+    ├── tile.php
+    └── assets/
+        └── tile.html
+```
+
+Der Name `PV-bersicht-main` aus dem ZIP und ein zusätzlicher verschachtelter Ordner sind häufige Ursachen für „No such file or directory“. Der Ausdruck `__DIR__` im aufrufenden Skript verwendet dessen tatsächliches Verzeichnis, auch wenn `IPS_GetKernelDir()` einen anderen Pfad zurückgibt. Anschließend das Skript in Symcon erneut ausführen.
 
 ## Zuordnung aus den Screenshots
 
