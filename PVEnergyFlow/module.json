@@ -1,0 +1,11 @@
+{
+  "id": "{EA06BF87-8C16-4D59-A588-D257574F9B49}",
+  "name": "PVEnergyFlow",
+  "type": 3,
+  "vendor": "",
+  "aliases": ["PV Energiefluss"],
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "PVFLOW"
+}

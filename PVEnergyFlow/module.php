@@ -1,0 +1,64 @@
+<?php
+
+class PVEnergyFlow extends IPSModule
+{
+    public function Create()
+    {
+        parent::Create();
+        $this->RegisterPropertyInteger('PVVariable', 22209);
+        $this->RegisterPropertyInteger('BatteryVariable', 18192);
+        $this->RegisterPropertyInteger('GridVariable', 13288);
+        $this->RegisterPropertyInteger('WallboxVariable', 31735);
+        $this->RegisterPropertyInteger('BatterySOCVariable', 45769);
+        $this->RegisterPropertyInteger('CarSOCVariable', 48784);
+        $this->RegisterPropertyInteger('RefreshSeconds', 30);
+        $this->RegisterVariableString('PVEnergyTile', 'PV Energiefluss', '~HTMLBox', 0);
+        $this->RegisterTimer('Refresh', 0, 'PVFLOW_Update($_IPS[\'TARGET\']);');
+    }
+
+    public function ApplyChanges()
+    {
+        parent::ApplyChanges();
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+        if (IPS_GetKernelRunlevel() === KR_READY) {
+            $this->StartUpdating();
+        }
+    }
+
+    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    {
+        if ($Message === IPS_KERNELMESSAGE && $Data[0] === KR_READY) {
+            $this->StartUpdating();
+        }
+    }
+
+    private function StartUpdating()
+    {
+        // Mindestens 10 Sekunden, damit Archivabfragen nicht unnötig oft laufen.
+        $this->SetTimerInterval('Refresh', max(10, $this->ReadPropertyInteger('RefreshSeconds')) * 1000);
+        $this->Update();
+        $this->SetStatus(102);
+    }
+
+    public function Update()
+    {
+        $pvTileContext = [
+            'parent' => $this->InstanceID,
+            'ids' => [
+                'pv' => $this->ReadPropertyInteger('PVVariable'),
+                'battery' => $this->ReadPropertyInteger('BatteryVariable'),
+                'grid' => $this->ReadPropertyInteger('GridVariable'),
+                'ev' => $this->ReadPropertyInteger('WallboxVariable'),
+                'soc' => $this->ReadPropertyInteger('BatterySOCVariable'),
+                'car' => $this->ReadPropertyInteger('CarSOCVariable'),
+            ],
+        ];
+        // Gemeinsamer Renderer; im Modulmodus wird kein Skripttimer angelegt.
+        include dirname(__DIR__) . '/tile.php';
+    }
+
+    public function GetConfigurationForm()
+    {
+        return file_get_contents(__DIR__ . '/form.json');
+    }
+}

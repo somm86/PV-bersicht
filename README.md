@@ -2,7 +2,19 @@
 
 Responsive HTMLBox mit animierten Leistungsflüssen und eingebettetem Archivdiagramm (24 Stunden, Stundenmittel). Keine externen Bibliotheken, Webhooks oder Zugangsdaten. Die Flüsse zeigen die Richtung zwischen Komponenten und dem Hausbus, keine nachgewiesene Zuordnung einzelner Energiequellen zu Verbrauchern.
 
-## Installation
+## Installation als Symcon-Modul (empfohlen)
+
+Voraussetzung: IP-Symcon ab 7.0. Dieses Repository enthält jetzt eine `library.json` und das Modul **PV Energiefluss**.
+
+1. In der Symcon-Modulverwaltung das Repository `https://github.com/somm86/PV-bersicht.git` hinzufügen bzw. den vorhandenen Eintrag aktualisieren. Als Branch **main** auswählen.
+2. Eine neue Instanz **PV Energiefluss** anlegen.
+3. In der Instanzkonfiguration die sechs Variablen auswählen. Die IDs aus den Screenshots sind voreingestellt. PV, Speicher und Netz müssen W liefern; die Wallbox kW. Netz positiv = Bezug, Speicher positiv = Laden.
+4. Änderungen übernehmen. Unter der Instanz wird die HTMLBox-Variable **PV Energiefluss** erstellt und regelmäßig aktualisiert. Mit **Jetzt aktualisieren** lässt sie sich sofort erneuern.
+5. Diese Variable in die Kachelvisualisierung bzw. eine kompatible IPSView-HTMLBox aufnehmen. Es müssen keine Dateien manuell in das Skriptverzeichnis kopiert werden.
+
+Wenn bereits die Skriptversion läuft, deren Skripttimer auf 0 setzen und die neue HTMLBox verwenden, um doppelte Aktualisierungen zu vermeiden. Die Modulinstallation wurde hier anhand der Metadaten und PHP-Syntax geprüft; der Test in einer echten Symcon-Laufzeit steht noch aus.
+
+## Alternative: Installation als Skript
 
 1. [ZIP von `main` herunterladen](https://github.com/somm86/PV-bersicht/archive/refs/heads/main.zip), entpacken und den Ordner `PV-bersicht-main` in `PV-bersicht` umbenennen. Diesen Ordner in das Verzeichnis kopieren, in dem die Symcon-Skripte (`*.ips.php`) liegen. Auf dem hier verwendeten System ist das `/mnt/data/symcon/scripts/`. Die Dateien gehören auf den Symcon-Server. Bei Docker das entsprechende eingebundene Datenverzeichnis verwenden.
 2. Ein **neues, ausschließlich dafür verwendetes PHP-Skript** in Symcon anlegen und folgenden Inhalt eintragen:
@@ -18,7 +30,7 @@ Responsive HTMLBox mit animierten Leistungsflüssen und eingebettetem Archivdiag
 
 ## Wenn die Datei nicht gefunden wird
 
-Die Einrichtung ist ein PHP-Skript mit HTMLBox, kein Modul für die Symcon-Modulverwaltung. Die Dateien werden durch `include` nicht heruntergeladen. Der folgende Aufbau muss auf dem Server vorhanden sein:
+Dieser Abschnitt betrifft ausschließlich die alternative Skriptinstallation. Bei der Modulinstallation sind keine manuellen Kopiervorgänge nötig. Die Dateien werden durch `include` nicht heruntergeladen. Der folgende Aufbau muss auf dem Server vorhanden sein:
 
 ```text
 /mnt/data/symcon/scripts/
@@ -50,7 +62,7 @@ Die PV-Quelle 22209 („mit Speicherberücksichtigung“) liefert laut Bestätig
 
 Für die jeweilige Variable muss die Archivierung im Archive Control aktiv sein. Antippen eines Leistungswertes öffnet dessen Verlauf; beim Speicher und bei der Wallbox ist auch der jeweilige Akkustand erreichbar. Es wird die erste Archive-Control-Instanz verwendet. Bereits aufgezeichnete Daten müssen für Stundenaggregate verfügbar sein. Fehlende Archivierung, leere Zeitbereiche und Lesefehler werden separat angezeigt. Die Grafik verwendet die konfigurierten Faktoren einschließlich Vorzeichen; die aktuelle Leistungsanzeige zeigt den Betrag plus Richtung. Diagramme zeigen Stundenmittel, keine Spitzen oder Energiebilanzen.
 
-Die gesamte HTMLBox wird alle 30 Sekunden erneuert; dabei kann ein geöffnetes Diagramm schließen. Dies vermeidet einen öffentlich erreichbaren Datenendpunkt. Keine automatische Aktivierung von Archivierung oder Steuerung von Wallbox/Speicher. Die eingebettete Seite benötigt JavaScript und moderne WebView-Unterstützung (`dialog`, SVG, srcdoc). Animationen stoppen bei aktivierter Systemeinstellung für reduzierte Bewegung.
+Die gesamte HTMLBox wird standardmäßig alle 30 Sekunden erneuert (im Modul konfigurierbar); dabei kann ein geöffnetes Diagramm schließen. Dies vermeidet einen öffentlich erreichbaren Datenendpunkt. Keine automatische Aktivierung von Archivierung oder Steuerung von Wallbox/Speicher. Die eingebettete Seite benötigt JavaScript und moderne WebView-Unterstützung (`dialog`, SVG, srcdoc). Animationen stoppen bei aktivierter Systemeinstellung für reduzierte Bewegung.
 
 ## Entwicklung und Prüfung
 
@@ -61,7 +73,7 @@ npm ci
 npm test
 ```
 
-Acht automatisierte Prüfungen bestanden: PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
+Neun automatisierte Prüfungen bestanden (einschließlich Modulmetadaten und Konfigurationszuordnung): PHP-Syntax mit PHP-8-Parser, Hausbilanz, Lade-/Entlade- und Netzrichtungen, Nullfluss, Diagrammöffnung und Archivpunkte, SOC-Umschaltung, leeres/deaktiviertes/fehlerhaftes Archiv sowie fehlende und unplausible Eingangsdaten. Die Interaktionen werden mit jsdom geprüft; native Dialogmethoden werden dort simuliert. Das ersetzt keinen visuellen Browsertest.
 
 Optional mit lokal installiertem PHP und Chromium:
 

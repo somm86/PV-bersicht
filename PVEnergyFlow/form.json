@@ -1,0 +1,15 @@
+{
+  "elements": [
+    {"type":"Label","caption":"PV Energiefluss: Quellen wählen, Änderungen übernehmen und die HTMLBox-Variable in die Visualisierung aufnehmen."},
+    {"type":"SelectVariable","name":"PVVariable","caption":"PV-Erzeugung (W)"},
+    {"type":"SelectVariable","name":"BatteryVariable","caption":"Speicherleistung (W; positiv = Laden)"},
+    {"type":"SelectVariable","name":"GridVariable","caption":"Netzleistung (W; positiv = Bezug)"},
+    {"type":"SelectVariable","name":"WallboxVariable","caption":"Wallbox-Leistung (kW)"},
+    {"type":"SelectVariable","name":"BatterySOCVariable","caption":"Speicherstand (%)"},
+    {"type":"SelectVariable","name":"CarSOCVariable","caption":"Fahrzeugakku (%)"},
+    {"type":"NumberSpinner","name":"RefreshSeconds","caption":"Aktualisierung in Sekunden (mindestens 10)","minimum":10}
+  ],
+  "actions": [
+    {"type":"Button","caption":"Jetzt aktualisieren","onClick":"PVFLOW_Update($id);"}
+  ]
+}

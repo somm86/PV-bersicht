@@ -11,6 +11,12 @@ $config = [
     'soc'     => ['id' => 45769, 'factor' => 1, 'label' => 'Speicherstand', 'unit' => '%'],
     'car'     => ['id' => 48784, 'factor' => 1, 'label' => 'Fahrzeugakku', 'unit' => '%'],
 ];
+// Die Modulinstanz kann IDs übergeben; der direkte Skriptbetrieb bleibt verfügbar.
+if (isset($pvTileContext)) {
+    foreach ($pvTileContext['ids'] as $key => $id) {
+        $config[$key]['id'] = $id;
+    }
+}
 // Vorzeichen: Batterie positiv = LADEN; Netz positiv = BEZUG.
 // Faktor -1 bzw. -1000 verwenden, wenn die Quelle andersherum zählt.
 $archiveIDs = IPS_GetInstanceListByModuleID('{43192F0B-135B-4CE7-A0A7-1475603F3060}');
@@ -41,7 +47,7 @@ foreach ($config as $key => $item) {
 $template = file_get_contents(__DIR__ . '/assets/tile.html');
 $html = str_replace('/*__DATA__*/null', json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR), $template);
 // Ident innerhalb des ausführenden Symcon-Skripts: einmalig anlegen, danach aktualisieren.
-$parent = $_IPS['SELF'];
+$parent = isset($pvTileContext) ? $pvTileContext['parent'] : $_IPS['SELF'];
 $box = @IPS_GetObjectIDByIdent('PVEnergyTile', $parent);
 if (!$box) {
     $box = IPS_CreateVariable(3);
@@ -52,4 +58,6 @@ if (!$box) {
 }
 SetValue($box, '<iframe title="PV Energiefluss" sandbox="allow-scripts" style="border:0;width:100%;height:100%;min-height:300px;display:block" srcdoc="' . htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '"></iframe>');
 // Nur das dedizierte aufrufende Skript verwenden! Timer führt es alle 30 s aus.
-IPS_SetScriptTimer($parent, 30);
+if (!isset($pvTileContext)) {
+    IPS_SetScriptTimer($parent, 30);
+}

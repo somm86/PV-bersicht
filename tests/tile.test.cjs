@@ -21,7 +21,9 @@ function render(overrides = {}) {
 }
 test('PHP source parses using PHP 8 grammar', () => {
   const parser = new PHPParser({parser:{version:'8.0',suppressErrors:false}});
-  assert.ok(parser.parseCode(fs.readFileSync(path.join(root,'tile.php'),'utf8')));
+  for (const file of ['tile.php','PVEnergyFlow/module.php']) {
+    assert.ok(parser.parseCode(fs.readFileSync(path.join(root,file),'utf8')), file);
+  }
 });
 test('house balance, charge and export directions', () => {
   const dom=render(),d=dom.window.document;
@@ -68,4 +70,21 @@ test('missing input suppresses house estimate; inconsistent balance warns',()=>{
   dom=render({pv:{value:0}});
   assert.match(dom.window.document.querySelector('#foot').textContent,/unplausibel/);
   dom.window.close();
+});
+
+test('Symcon library discovery and configuration reference an implemented module',()=>{
+  const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+  const library=read('library.json'), module=read('PVEnergyFlow/module.json'), form=read('PVEnergyFlow/form.json');
+  const guid=/^\{[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}\}$/i;
+  assert.match(library.id,guid);
+  assert.match(module.id,guid);
+  assert.notEqual(library.id,module.id);
+  assert.equal(module.type,3);
+  const source=fs.readFileSync(path.join(root,'PVEnergyFlow/module.php'),'utf8');
+  assert.ok(source.includes('class '+module.name+' extends IPSModule'));
+  for(const element of form.elements.filter(e=>e.name)) {
+    assert.ok(source.includes("RegisterPropertyInteger('"+element.name+"'"),element.name);
+  }
+  for(const action of form.actions) assert.ok(action.onClick.startsWith(module.prefix+'_Update('));
+  assert.ok(fs.existsSync(path.join(root,'assets/tile.html')));
 });
