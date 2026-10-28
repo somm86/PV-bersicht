@@ -109,7 +109,7 @@ for(const [id,key,label,unit] of [
 for(const [bar,key] of [['batteryBar','soc'],['carBar','car']])document.getElementById(bar).setAttribute('width',Math.max(0,Math.min(100,value(key)||0))*1.7);
 
 const phases=value('phases');
-document.getElementById('evPhases').textContent='Ladephasen · '+(Number.isInteger(phases)&&phases>=0&&phases<=3?phases+'-phasig':'—');
+document.getElementById('evPhases').textContent=(Number.isInteger(phases)&&phases>=0&&phases<=3?phases+'~':'—');
 const remaining=value('remaining');
 document.getElementById('evRemaining').textContent='Restladezeit · '+(v.remaining?.display ?? (remaining==null?'—':String(remaining)));
 

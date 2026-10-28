@@ -167,13 +167,13 @@ test('counter resets split the curve and bounded data is clearly marked',()=>{
 });
 test('wallbox displays phases and unconverted source time',()=>{
   let dom=render({phases:{value:3},remaining:{value:5400,display:'1 h 30 min'}}),d=dom.window.document;
-  assert.equal(d.querySelector('#evPhases').textContent,'Ladephasen · 3-phasig');
+  assert.equal(d.querySelector('#evPhases').textContent,'3~');
   assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · 1 h 30 min');
   d.querySelector('#evRemaining').dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
   assert.equal(d.querySelector('dialog').open,false);
   dom.window.close();
   dom=render({phases:{value:7},remaining:{value:null}});d=dom.window.document;
-  assert.equal(d.querySelector('#evPhases').textContent,'Ladephasen · —');
+  assert.equal(d.querySelector('#evPhases').textContent,'—');
   assert.equal(d.querySelector('#evRemaining').textContent,'Restladezeit · —');
   dom.window.close();
 });
